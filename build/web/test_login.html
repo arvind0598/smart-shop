@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Test Login</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form id="login">
+            <input id="user" type="text" name="username" required/>
+            <input id="pass" type="password" name="password" required/>
+            <button> Submit </button>
+        </form>
+        <p id="message"></p>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
+        </script>
+        
+        <script>
+            let form = $("#login");
+            let message = $("#message");
+            form.on("submit", event => {
+               event.preventDefault();
+               event.stopPropagation();
+               $.ajax({
+                   type : "POST",
+                   url : "serve_test_login",
+                   data : form.serializeArray(),
+                   success : data => {
+                       let x = data.status === 1 ? "success" : "failure";
+                       message.text(x);
+                   },
+                   error : err => {
+                       console.log("error");
+                   }
+               });
+               return false;
+            });
+        </script>
+    </body>        
+</html>
