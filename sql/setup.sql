@@ -35,6 +35,7 @@ create table points(
 	num int not null
 );
 
+
 -- items
 
 create table categories(
@@ -62,10 +63,18 @@ create table offers(
 	primary key(id, amt)
 );
 
+create table cart(
+	id int primary key references customer on delete cascade,
+	p_id int references items(id) on delete cascade,
+	cost int references items on delete cascade,
+	qty int not null
+);
+
 -- orders
 
 create table orders(
 	id int primary key,
+	bill int not null,
 	cus_id int references customer(id) on delete cascade
 );
 
