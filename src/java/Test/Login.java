@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.sql.*;
 
 /**
  *
@@ -22,9 +21,7 @@ import java.sql.*;
 @WebServlet(name = "Login", urlPatterns = {"/serve_test_login"})
 public class Login extends HttpServlet {
 
-    static final String DB_URL = "jdbc:mysql://localhost/shop";
-    static final String DB_USER = "root";
-    static final String DB_PASS = "password";
+   Process x = new Process();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,33 +32,7 @@ public class Login extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected int checkUser(String username, String password)
-            throws ServletException, IOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet res = null;
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
-            stmt = conn.prepareStatement("select * from login where username=? and password=?");
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-
-            res = stmt.executeQuery();
-            
-            if (res.next()) {
-                System.out.println(res.getInt(1));
-                return res.getInt(1);
-            } else {
-                return 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
+    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -98,7 +69,7 @@ public class Login extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        int status = checkUser(username, password);
+        int status = x.checkUser(username, password) ? 1 : 0;
 
         try (PrintWriter out = response.getWriter()) {
             out.println(String.format("{\"status\":%d,\"message\":\"response received\"}", status));

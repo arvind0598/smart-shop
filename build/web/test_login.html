@@ -32,6 +32,7 @@ and open the template in the editor.
                    url : "serve_test_login",
                    data : form.serializeArray(),
                    success : data => {
+                       console.log(data);
                        let x = data.status === 1 ? "success" : "failure";
                        message.text(x);
                    },

@@ -18,7 +18,7 @@ create table login(
 
 create table logs(
 	time_performed timestamp not null default current_timestamp,
-	id int references login on delete cascade,
+	username varchar(30) references login on delete cascade,
 	type varchar(20) not null
 );
 
