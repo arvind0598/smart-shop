@@ -29,8 +29,7 @@ create table admin_logs like cust_logs;
 create table customer(
 	id int primary key references login on delete cascade,
 	name varchar(30) not null,
-	address varchar(100) not null,
-	birth_date date not null,
+	address varchar(100) default null,
 	registered_time timestamp not null default current_timestamp
 );
 
@@ -51,7 +50,8 @@ create table items(
 	cat_id int references categories(id) on delete cascade,
 	name varchar(30) not null,
 	details varchar(200),
-	cost int not null
+	cost int not null,
+	keywords varchar(200)
 );
 
 create table stock(
@@ -99,3 +99,5 @@ create table feedback(
 	message_id varchar(200) not null,
 	primary key(order_id, message_id)
 );
+
+
