@@ -10,6 +10,10 @@ and open the template in the editor.
 
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300');
 
+:root {
+    --main-color: #2874f0;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -20,7 +24,7 @@ and open the template in the editor.
 /* NAVBAR */
 
 header {
-    background: #2874f0;
+    background: var(--main-color);
     display: grid;
     justify-items: stretch;
     align-items: center;
