@@ -37,7 +37,6 @@ create table points(
 	num int not null
 );
 
-
 -- items
 
 create table categories(
