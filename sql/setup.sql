@@ -16,11 +16,13 @@ create table login(
 
 -- management
 
-create table logs(
+create table cust_logs(
 	time_performed timestamp not null default current_timestamp,
 	username varchar(30) references login on delete cascade,
 	type varchar(20) not null
 );
+
+create table admin_logs like cust_logs;
 
 -- customer tables
 
