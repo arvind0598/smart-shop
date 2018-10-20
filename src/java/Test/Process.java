@@ -51,8 +51,8 @@ public class Process {
         Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
         return conn;
     }
-    
-    int checkUser(String useremail, String password) {
+       
+    int checkUser(String useremail, String password, Boolean internal) {
         
         int status = -1;
                 
@@ -63,12 +63,12 @@ public class Process {
             stmt.setString(2, password);
 
             ResultSet res = stmt.executeQuery();
-            
+           
             if(res.next()) {
                 status = res.getInt(1);
-                logAction(conn, useremail, CustLogs.LOGIN_SUCCESS);
+                if(!internal) logAction(conn, useremail, CustLogs.LOGIN_SUCCESS);
             } else {
-                logAction(conn, useremail, CustLogs.LOGIN_FAIL);
+                if(!internal) logAction(conn, useremail, CustLogs.LOGIN_FAIL);
             }
             
             conn.close();            
@@ -91,7 +91,7 @@ public class Process {
             stmt.setString(2, password);
             stmt.execute();
             
-            int id = checkUser(email, password);
+            int id = checkUser(email, password, true);
             stmt = conn.prepareStatement("insert into customer(id, name) values(?, ?)");
             stmt.setInt(1, id);
             stmt.setString(2, name);

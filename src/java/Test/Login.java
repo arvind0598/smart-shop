@@ -78,7 +78,7 @@ public class Login extends HttpServlet {
             return;
         } 
        
-        int status = x.checkUser(useremail, password);
+        int status = x.checkUser(useremail, password, false);
 
         try (PrintWriter out = response.getWriter()) {
             HttpSession sess = request.getSession();
