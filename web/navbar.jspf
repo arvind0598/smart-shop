@@ -10,7 +10,7 @@
     </form>
     <a href="#"> Cart </a>
     <c:choose>
-        <c:when test="${login ge 0}">
+        <c:when test="${sessionScope.login ge 0}">
             <a href="#"> My Profile </a>
             <a href="signout"> Sign Out </a>
         </c:when>

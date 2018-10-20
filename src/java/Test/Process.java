@@ -79,8 +79,29 @@ public class Process {
         return status;
     }
     
-    void registerUser() {
+    Boolean registerUser(String name, String email, String password) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt;
+            
+            stmt = conn.prepareStatement("insert into login(email, password, level) values(?, ?, 0)");
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            stmt.execute();
+            
+            int id = checkUser(email, password);
+            stmt = conn.prepareStatement("insert into customer(id, name) values(?, ?)");
+            stmt.setInt(1, id);
+            stmt.setString(2, name);
+            stmt.execute();
+            status = true;
+            
+        } catch(Exception e) {
+            Helper.handleError(e);
+        }
         
+        return status;
     }
     
     Boolean logoutUser(int id) {

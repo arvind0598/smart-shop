@@ -36,7 +36,11 @@ public class Logout extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession sess = request.getSession();
-        int status = (int)sess.getAttribute("login");
+        Integer status = (Integer)sess.getAttribute("login");
+        if(status == null) {
+            response.sendRedirect("index.jsp");
+            return;
+        }
         Boolean allow = x.logoutUser(status);
         if(!allow) return;
         request.getSession().invalidate();
@@ -79,7 +83,7 @@ public class Logout extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "logs out a user an invalidates session";
     }// </editor-fold>
 
 }

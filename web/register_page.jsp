@@ -16,10 +16,10 @@
     <body>
         <%@ include file="navbar.jspf"%>
         <form id="register">    
-            <input id="user" type="text" name="username" placeholder="Username" required/>
-            <input id="pass" type="password" name="password" required/>
-            <input id="conf_pass" type="password" name="conf_password" required/>
-            <input id="email" type="email" name="email" required/>
+            <input id="name" type="text" name="name" placeholder="Name" required/>
+            <input id="email" type="email" name="email" placeholder="Email" required/>
+            <input id="pass" type="password" name="password" placeholder="Enter Password" required/>
+            <input id="conf_pass" type="password" name="conf_password" placeholder="Confirm Password" required/>
             <button> Submit </button>
         </form>
         <p id="message"></p>

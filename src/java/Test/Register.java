@@ -7,6 +7,7 @@ package Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,17 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
-import java.util.regex.*;
-
 
 /**
  *
  * @author de-arth
  */
-@WebServlet(name = "Login", urlPatterns = {"/serve_login"})
-public class Login extends HttpServlet {
-
-   Process x = new Process();
+@WebServlet(name = "Register", urlPatterns = {"/serve_register"})
+public class Register extends HttpServlet {
+    
+    Process x = new Process();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -58,16 +57,18 @@ public class Login extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
 
-        String useremail = request.getParameter("useremail");
+        String useremail = request.getParameter("email");
+        String username = request.getParameter("name");
         String password = request.getParameter("password");
         
         Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
         Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
         
-        // add password validation here
+        // add password and name validation here
         Boolean password_correct = true;
+        Boolean username_correct = true;
         
-        if(!useremail_correct || !password_correct) {
+        if(!useremail_correct || !password_correct || !username_correct) {
             try (PrintWriter out = response.getWriter()) {
                 JSONObject obj = new JSONObject();
                 obj.put("status", -1);
@@ -78,27 +79,18 @@ public class Login extends HttpServlet {
             return;
         } 
        
-        int status = x.checkUser(useremail, password);
+        Boolean status = x.registerUser(username, useremail, password);
 
         try (PrintWriter out = response.getWriter()) {
             HttpSession sess = request.getSession();
             JSONObject obj = new JSONObject();
             
             obj.put("status", status);
-            String message = (status > 0) ? "Login successful" : "Login unsuccesful";
+            String message = status ? "Registration successful" : "Registration unsuccessful";
             obj.put("message", message);
             out.println(obj);
             out.close();
-            
-            if(status == -1) {
-                sess.invalidate();
-                return;
-            }
-            
-            sess.setAttribute("login", status);
-            sess.setMaxInactiveInterval(60*60);
         }
-        
     }
 
     /**
@@ -108,7 +100,7 @@ public class Login extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "just a test login processor";
+        return "servlet registers a user";
     }// </editor-fold>
 
 }
