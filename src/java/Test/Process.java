@@ -32,6 +32,7 @@ public class Process {
     enum AdminLogs {
         LOGIN, 
         LOGOUT,
+        REGISTER,
         ADD_CATEGORY,
         ADD_ITEM,
         MODIFY_STOCK,
@@ -95,6 +96,8 @@ public class Process {
             stmt.setInt(1, id);
             stmt.setString(2, name);
             stmt.execute();
+            
+            logAction(conn, email, CustLogs.REGISTER);
             status = true;
             
         } catch(Exception e) {
