@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,7 +17,7 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div> Project is now running. </div>
+        <div> Project is now running for <%=session.getAttribute("trial")%></div>
         <c:forEach var="i" begin="1" end="10">
             <p><c:out value="${i}"/></p>
         </c:forEach>

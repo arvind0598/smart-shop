@@ -24,7 +24,7 @@ header {
     display: grid;
     justify-items: stretch;
     align-items: center;
-    grid-template-columns: 1fr 4fr 1fr 1fr;
+    grid-template-columns: 1fr 4fr 1fr 1fr 1fr;
     height: 9vh;
     padding: 0 10px;
     
