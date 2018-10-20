@@ -8,8 +8,14 @@
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 
 <%
-    Boolean isLoggedIn = (int)session.getAttribute("login") > 0;
-    if(isLoggedIn) response.sendRedirect("index.jsp");
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setDateHeader("Expires", -1);
+    
+    Integer x = (Integer)session.getAttribute("login");
+    if(x != null && x > 0) {
+        response.sendRedirect("index.jsp");
+    }
 %>
 
 <!DOCTYPE html>
@@ -53,6 +59,7 @@
                });
                return false;
             });
+            
         </script>
     </body>
 </html>
