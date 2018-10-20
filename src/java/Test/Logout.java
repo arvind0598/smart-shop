@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -19,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "Logout", urlPatterns = {"/signout"})
 public class Logout extends HttpServlet {
+    
+    Process x = new Process();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,6 +35,10 @@ public class Logout extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        HttpSession sess = request.getSession();
+        int status = (int)sess.getAttribute("login");
+        Boolean allow = x.logoutUser(status);
+        if(!allow) return;
         request.getSession().invalidate();
         response.sendRedirect("index.jsp");        
     }

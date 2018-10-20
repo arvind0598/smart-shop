@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
+import java.util.regex.*;
 
 
 /**
@@ -68,21 +69,45 @@ public class Login extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
 
-        String username = request.getParameter("username");
+        String useremail = request.getParameter("useremail");
         String password = request.getParameter("password");
-
-        int status = x.checkUser(username, password) ? 1 : 0;
+        
+        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
+        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        
+        // add password validation here
+        Boolean password_correct = true;
+        
+        if(!useremail_correct || !password_correct) {
+            try (PrintWriter out = response.getWriter()) {
+                JSONObject obj = new JSONObject();
+                obj.put("status", -1);
+                obj.put("message", "Input provided was not valid.");
+                out.println(obj);
+                out.close();                
+            }             
+            return;
+        } 
+       
+        int status = x.checkUser(useremail, password);
 
         try (PrintWriter out = response.getWriter()) {
             HttpSession sess = request.getSession();
             JSONObject obj = new JSONObject();
             
             obj.put("status", status);
-            String message = (status == 1) ? "Login succesful" : "Login unsuccesful";
+            String message = (status > 0) ? "Login successful" : "Login unsuccesful";
             obj.put("message", message);
-            sess.setAttribute("login", (status == 1));
             out.println(obj);
             out.close();
+            
+            if(status == -1) {
+                sess.invalidate();
+                return;
+            }
+            
+            sess.setAttribute("login", status);
+            sess.setMaxInactiveInterval(60*60);
         }
         
     }

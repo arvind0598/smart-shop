@@ -1,3 +1,3 @@
 # Smart Shopping
 
-Documentation goes here.
+Instructions on how to use the project goes here.

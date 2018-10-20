@@ -51,46 +51,70 @@ public class Process {
         return conn;
     }
     
-    Boolean checkUser(String username, String password) {
+    int checkUser(String useremail, String password) {
         
-        Boolean status = false;
+        int status = -1;
                 
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select level from login where username=? and password=?");
-            stmt.setString(1, username);
+            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=?");
+            stmt.setString(1, useremail);
             stmt.setString(2, password);
 
             ResultSet res = stmt.executeQuery();
             
-            if (res.next()) {
-                status = true;
-                System.out.println(res.getInt(1));
-                if(res.getInt(1) == 0) logAction(conn, username, CustLogs.LOGIN_SUCCESS);
-                else logAdminAction(conn, username, AdminLogs.LOGIN);
+            if(res.next()) {
+                status = res.getInt(1);
+                logAction(conn, useremail, CustLogs.LOGIN_SUCCESS);
+            } else {
+                logAction(conn, useremail, CustLogs.LOGIN_FAIL);
             }
-            else {
-                logAction(conn, username, CustLogs.LOGIN_FAIL);
-            }
+            
             conn.close();            
             
         } catch (Exception e) {
-            e.printStackTrace();
+            Helper.handleError(e);
         } 
         
         return status;
     }
     
+    void registerUser() {
+        
+    }
+    
+    Boolean logoutUser(int id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select email from login where id=?");
+            stmt.setInt(1, id);
+            
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                String email = res.getString(1);
+                logAction(conn, email, CustLogs.LOGOUT);      
+                status = true;
+            }
+        } catch(Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    
     void logAction(Connection conn, String username, CustLogs type) {
         
         try {
-            PreparedStatement stmt = conn.prepareStatement("insert into cust_logs(username, type) values(?,?)");
+            PreparedStatement stmt = conn.prepareStatement("insert into cust_logs(email, type) values(?,?)");
             stmt.setString(1, username);
             stmt.setString(2, type.toString());
             stmt.execute();
             
         } catch (Exception e) {
-            e.printStackTrace();
+            Helper.handleError(e);
         }
         
     }
@@ -98,15 +122,27 @@ public class Process {
     void logAdminAction(Connection conn, String username, AdminLogs type) {
         
         try {
-            PreparedStatement stmt = conn.prepareStatement("insert into admin_logs(username, type) values(?,?)");
+            PreparedStatement stmt = conn.prepareStatement("insert into admin_logs(email, type) values(?,?)");
             stmt.setString(1, username);
             stmt.setString(2, type.toString());
             stmt.execute();
             
         } catch (Exception e) {
-            e.printStackTrace();
+            Helper.handleError(e);
         }
-        
     }
     
+}
+
+class Helper {
+    // implement password hashing here as a public static method
+    // further, call it in registerUser before storing password
+    
+    public static void handleError(Exception e) {
+        try {
+            e.printStackTrace();
+        } catch(Exception anotherOne) {
+            System.out.println(anotherOne.toString());
+        }
+    }
 }

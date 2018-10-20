@@ -3,20 +3,20 @@
 <%@ page pageEncoding="UTF-8" %>
 
 <header>
-    <a href="#" class="stayleft"> S MART </a>
+    <a href="index.jsp" class="stayleft"> S MART </a>
     <form>
         <input type="text" name="search" placeholder="Search for products and more..."/>
         <input type="submit" hidden/>
     </form>
     <a href="#"> Cart </a>
     <c:choose>
-        <c:when test="${login}">
+        <c:when test="${login ge 0}">
             <a href="#"> My Profile </a>
             <a href="signout"> Sign Out </a>
         </c:when>
         <c:otherwise>
             <a href="login_page.jsp"> Sign In </a>
-            <a href="#"> Register </a>
+            <a href="register_page.jsp"> Register </a>
         </c:otherwise>   
     </c:choose>
 </header>

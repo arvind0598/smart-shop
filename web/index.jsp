@@ -17,7 +17,7 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div> Project is now running for <%=session.getAttribute("trial")%></div>
+        <div> Project is now running for <%=session.getAttribute("login")%></div>
         <c:forEach var="i" begin="1" end="10">
             <p><c:out value="${i}"/></p>
         </c:forEach>
