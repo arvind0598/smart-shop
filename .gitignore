@@ -7,3 +7,4 @@ nbactions.xml
 nb-configuration.xml
 
 *.class
+src/java/Test/Credentials.java
