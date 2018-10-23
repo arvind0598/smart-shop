@@ -35,7 +35,7 @@ create table customer(
 
 create table points(
 	id int primary key references customer on delete cascade,
-	num int not null
+	num int not null default 0
 );
 
 -- items
@@ -67,9 +67,8 @@ create table offers(
 );
 
 create table cart(
-	id int primary key references customer on delete cascade,
+	c_id int references customer(id) on delete cascade,
 	p_id int references items(id) on delete cascade,
-	cost int not null,
 	qty int not null
 );
 

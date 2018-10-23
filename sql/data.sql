@@ -2,7 +2,7 @@
 
 insert into login(email, password, level) values("arvind0598@gmail.com", "pass", 0);
 insert into login(email, password, level) values("admin@admin.com", "admin1", 1);
-insert into customer(id, name, address) values(1, 'arvind', 'Apt.-32 Sugar Lane');
+insert into customer(id, name, address) values(1, 'Arvind S', 'Apt.-32 Sugar Lane');
 insert into points(id, num) values(1, 23);
 
 insert into categories(name) values('Footwear');
@@ -25,14 +25,14 @@ insert into stock(id, amt) values(4, 50);
 insert into stock(id, amt) values(5, 70);
 insert into stock(id, amt) values(6, 100);
 
-insert into offers(id, amt) values(1, 100); --nike
-insert into offers(id, amt) values(2, 250); --catwalk
+insert into offers(id, amt) values(1, 100); 
+insert into offers(id, amt) values(2, 250); 
 
-insert into cart(id, p_id, qty) values(1, 1, 1);--nike
-insert into cart(id, p_id, qty) values(1, 3, 2);--cheese
+insert into cart(c_id, p_id, qty) values(1, 1, 1);
+insert into cart(c_id, p_id, qty) values(1, 3, 2);
 
 insert into orders(bill, cus_id) values(1100, 1);
-insert into order_item(order_id, product_id, qty) values(1, 1, 1);
-insert into order_item(order_id, product_id, qty) values(1, 3, 2);
+insert into order_items(order_id, product_id, qty) values(1, 1, 1);
+insert into order_items(order_id, product_id, qty) values(1, 3, 2);
 
 insert into feedback(order_id, message_id) values(1, 'Very good service');

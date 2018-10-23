@@ -49,7 +49,7 @@
                    url : "serve_login",
                    data : form.serializeArray(),
                    success : data => {
-                       if(data.status === 1) window.location.href = "index.jsp";
+                       if(data.status > 0) window.location.href = "index.jsp";
                        message.text(data.message);
                    },
                    error : err => {

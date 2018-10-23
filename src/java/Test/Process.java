@@ -6,16 +6,13 @@
 package Test;
 
 import java.sql.*;
+import org.json.simple.*;
 
 /**
  *
  * @author de-arth
  */
 public class Process {
-    
-    static final String DB_URL = "jdbc:mysql://localhost/shop";
-    static final String DB_USER = "root";
-    static final String DB_PASS = "password";
     
     enum CustLogs {
         LOGIN_SUCCESS, 
@@ -26,7 +23,8 @@ public class Process {
         RMV_FROM_CART,
         CHECKOUT,
         TXN_SUCCESS,
-        TXN_FAILURE;
+        TXN_FAILURE,
+        FEEDBACK;
     }
     
     enum AdminLogs {
@@ -34,9 +32,13 @@ public class Process {
         LOGOUT,
         REGISTER,
         ADD_CATEGORY,
+        RMV_CATEGORY,
         ADD_ITEM,
+        RMV_ITEM,
         MODIFY_STOCK,
-        ADD_OFFER;
+        ADD_OFFER,
+        RMV_OFFER,
+        CHANGE_DEL_STATUS;
     }
     
     enum DeliveryStatus {
@@ -48,10 +50,11 @@ public class Process {
     Connection connectSQL() 
             throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
-        Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+        Credentials cred = new Credentials();
+        Connection conn = DriverManager.getConnection(cred.DB_URL, cred.DB_USER, cred.DB_PASS);
         return conn;
     }
-       
+          
     int checkUser(String useremail, String password, Boolean internal) {
         
         int status = -1;
@@ -86,6 +89,8 @@ public class Process {
             Connection conn = connectSQL();
             PreparedStatement stmt;
             
+            // check if user id exists not done because duplicate entry violates constraint and hence returns false
+            
             stmt = conn.prepareStatement("insert into login(email, password, level) values(?, ?, 0)");
             stmt.setString(1, email);
             stmt.setString(2, password);
@@ -99,6 +104,8 @@ public class Process {
             
             logAction(conn, email, CustLogs.REGISTER);
             status = true;
+            
+            conn.close();
             
         } catch(Exception e) {
             Helper.handleError(e);
@@ -121,6 +128,8 @@ public class Process {
                 logAction(conn, email, CustLogs.LOGOUT);      
                 status = true;
             }
+            
+            conn.close();
         } catch(Exception e) {
             Helper.handleError(e);
         }
@@ -128,6 +137,251 @@ public class Process {
         return status;
     }
     
+    JSONObject getCategories() {
+        
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select * from categories");
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                x.put(res.getInt(1), res.getString(2));
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    JSONObject getProducts(int category_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select id, name, cost from categories where cat_id = ?");
+            stmt.setInt(1, category_id);
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                JSONObject item = new JSONObject();
+                item.put("name", res.getString(2));
+                item.put("cost", res.getInt(3));
+                x.put(res.getInt(1), item);
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    JSONObject getProductDetails(int product_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select name, details, cost from items where id = ?");
+            stmt.setInt(1, product_id);
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                int offer = getOfferOnProduct(conn, product_id);
+                x.put("name", res.getString(1));
+                x.put("details", res.getString(2));
+                x.put("cost", res.getInt(3));
+                x.put("offer", offer);
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    int getOfferOnProduct(Connection conn, int product_id) {
+        int offer = -1;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select amt from offers where id = ?");
+            stmt.setInt(1, product_id);
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                offer = res.getInt(1);
+            }
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return offer;
+    }
+    
+    String getNameOfProduct(Connection conn, int product_id) {
+        String name = null;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select name from items where id = ?");
+            stmt.setInt(1, product_id);
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                name = res.getString(1);
+            }
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return name;
+    }
+    
+    int getPriceOfProduct(Connection conn, int product_id) {
+        
+        int cost = -1;
+        
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select cost from items where id = ?");
+            stmt.setInt(1, product_id);
+            
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                cost = res.getInt(1);
+            }
+            
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return cost;
+    }
+    
+    JSONObject getCartProducts(int customer_id) {
+        
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select p_id, qty from offers where c_id = ?");
+            stmt.setInt(1, customer_id);
+            
+            ResultSet res = stmt.executeQuery();
+            while(res.next()) {
+                JSONObject item = new JSONObject();
+                int p_id = res.getInt(1);
+                String name = getNameOfProduct(conn, p_id);
+                int cost = getPriceOfProduct(conn, p_id);
+                int offer = getOfferOnProduct(conn, p_id);
+                item.put("name", name);
+                item.put("cost", cost);
+                item.put("offer", offer);
+                item.put("qty", res.getInt(2));
+                x.put(p_id, item);
+            }
+            
+            conn.close();
+        }
+        
+        catch(Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    Boolean addToCart(int customer_id, int product_id) {
+        Boolean status = false;
+        
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select qty from cart where c_id = ? and p_id = ?");
+            stmt.setInt(1, customer_id);
+            stmt.setInt(2, product_id);
+            
+            ResultSet res = stmt.executeQuery();
+            int qty = 0;
+            
+            if(res.next()) {
+                qty = res.getInt(1);
+                stmt = conn.prepareStatement("update cart set qty = ? where c_id = ? and p_id = ?");
+                stmt.setInt(1, qty + 1);
+                stmt.setInt(2, customer_id);
+                stmt.setInt(3, product_id);
+                
+                stmt.execute();
+            }
+            
+            else {
+                stmt = conn.prepareStatement("insert into cart(c_id, p_id, qty) values(?, ?, ?)");
+                stmt.setInt(1, customer_id);
+                stmt.setInt(2, product_id);
+                stmt.setInt(3, qty + 1);
+                
+                stmt.execute();
+            }
+            
+            status = true;            
+        }
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    Boolean removeFromCart(int customer_id, int product_id) {
+        Boolean status = false;
+        
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select qty from cart where c_id = ? and p_id = ?");
+            stmt.setInt(1, customer_id);
+            stmt.setInt(2, product_id);
+            
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                int qty = res.getInt(1);
+                if(qty > 1) {
+                    stmt = conn.prepareStatement("update cart set qty = ? where c_id = ? and p_id = ?");
+                    stmt.setInt(1, qty - 1);
+                    stmt.setInt(2, customer_id);
+                    stmt.setInt(3, product_id);
+
+                    stmt.execute();
+                }
+                
+                else {
+                    stmt = conn.prepareStatement("delete from cart where c_id = ? and p_id = ?");
+                    stmt.setInt(1, customer_id);
+                    stmt.setInt(2, product_id);
+
+                    stmt.execute();
+                }
+            }
+            
+            status = true;            
+        }
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    // helpful functions
     
     void logAction(Connection conn, String username, CustLogs type) {
         
