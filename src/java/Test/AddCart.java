@@ -16,15 +16,14 @@ import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
 import java.util.regex.*;
 
-
 /**
  *
  * @author de-arth
  */
-@WebServlet(name = "Login", urlPatterns = {"/serve_login"})
-public class Login extends HttpServlet {
-
-   Process x = new Process();
+@WebServlet(name = "AddCart", urlPatterns = {"/serve_addcart"})
+public class AddCart extends HttpServlet {
+    
+    Process x = new Process();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -57,47 +56,44 @@ public class Login extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
+        HttpSession sess = request.getSession();
+        JSONObject obj = new JSONObject();
+        
+        String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
+        String temp_item_id = request.getParameter("id");
+        
+        Pattern numbers_only = Pattern.compile("^[0-9]+$");
+        Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
+        Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();
 
-        String useremail = request.getParameter("useremail");
-        String password = request.getParameter("password");
-        
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
-        
-        // add password validation here
-        Boolean password_correct = true;
-        
-        if(!useremail_correct || !password_correct) {
-            try (PrintWriter out = response.getWriter()) {
-                JSONObject obj = new JSONObject();
-                obj.put("status", -1);
-                obj.put("message", "Input provided was not valid.");
-                out.println(obj);
-                out.close();                
-            }             
-            return;
-        } 
-       
-        int status = x.checkUser(useremail, password, false);
-
-        try (PrintWriter out = response.getWriter()) {
-            HttpSession sess = request.getSession();
-            JSONObject obj = new JSONObject();
-            
-            obj.put("status", status);
-            String message = (status > 0) ? "Login successful" : "Login unsuccesful";
-            obj.put("message", message);
-            out.println(obj);
-            out.close();
-            
-            if(status == -1) {
-                sess.invalidate();
-                return;
+        if(!cust_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Login to add to cart.");
+        }
+        else if(!item_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Invalid Request");
+        }
+        else {
+            int cust_id = Integer.parseInt(temp_cust_id);
+            int item_id = Integer.parseInt(temp_item_id);
+                    
+            Boolean status = x.addToCart(cust_id, item_id);
+            if(!status) {
+                obj.put("status", 0);
+                obj.put("message", "Unable to add to cart.");
             }
             
-            sess.setAttribute("login", status);
+            else {
+                obj.put("status", 1);
+                obj.put("message", "Succesfully added item.");
+            }
+            
         }
-        
+        try (PrintWriter out = response.getWriter()) {
+            out.println(obj);
+            out.close();
+        }
     }
 
     /**
@@ -107,7 +103,7 @@ public class Login extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "just a test login processor";
+        return "adds a given item to a cart";
     }// </editor-fold>
 
 }

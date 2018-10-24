@@ -8,13 +8,14 @@
         <input type="text" name="search" placeholder="Search for products and more..."/>
         <input type="submit" hidden/>
     </form>
-    <a href="#"> Cart </a>
     <c:choose>
         <c:when test="${sessionScope.login ge 0}">
+            <a href="#"> Cart </a>
             <a href="#"> My Profile </a>
             <a href="signout"> Sign Out </a>
         </c:when>
         <c:otherwise>
+            <p></p>
             <a href="login_page.jsp"> Sign In </a>
             <a href="register_page.jsp"> Register </a>
         </c:otherwise>   
