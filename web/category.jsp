@@ -4,7 +4,9 @@
     Author     : de-arth
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page import="org.json.simple.JSONObject" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <%
     Integer cat_id = null;
@@ -15,6 +17,9 @@
     catch(Exception e) {
         response.sendRedirect("index.jsp");
     }
+    JSONObject products = new Test.Process().getProducts(cat_id);
+    request.setAttribute("products", products);
+    session.setAttribute("currentpage", "category.jsp?" + request.getQueryString());
 %>
 
 <!DOCTYPE html>
@@ -28,30 +33,19 @@
     <body>
         <%@ include file="navbar.jspf"%>
         <h1>Hello World!</h1>
-        <div id="products"></div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
-        </script>
-        
-        <script>
-            const getTemplate = (id, json) => {
-                let link = name.toLowerCase().split(" ").join("");                
-                let tagImg = $("<img/>").attr("src", "images/" + id + ".png");
-                let tagName = $("<a></a>").text(json.name).attr("href", "product.jsp?id=" + id);
-                
-                let costString = (json.offer ? "<s>" + json.cost + "</s> " : "") + (json.cost - json.offer);
-                console.log(costString);
-                let tagCost = $("<p></p>").html(costString);
-                let div = $("<div></div>").append(tagImg).append(tagName).append(tagCost);
-                return div;
-            }
-            
-            let productDiv = $("#products");
-            let products = <%=new Test.Process().getProducts(cat_id).toString()%>;
-            console.log(products);
-            for(let i in products) {
-                productDiv.append(getTemplate(i, products[i]));
-            }          
-            
-        </script>
+        <div>
+            <c:forEach items="${products}" var="product">
+                <div>
+                    <img src="images/${product.key}.png"/>
+                    <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
+                    <p>
+                        <c:if test="${product.value.offer ne 0}">
+                            <s> ${product.value.cost} </s>
+                        </c:if>
+                        <c:out value="${product.value.cost - product.value.offer}"/>
+                    </p>      
+                </div>
+            </c:forEach>
+        </div>
     </body>
 </html>

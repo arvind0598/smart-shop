@@ -40,7 +40,8 @@ CREATE TABLE `items` (
 CREATE TABLE `cart` (
 	`cust_id` int NOT NULL,
 	`item_id` int NOT NULL,
-	`qty` int NOT NULL DEFAULT '1'
+	`qty` int NOT NULL DEFAULT '1',
+	`active` int NOT NULL DEFAULT '1'
 );
 
 CREATE TABLE `orders` (

@@ -4,8 +4,9 @@
     Author     : de-arth
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+<%@ page import="org.json.simple.JSONObject" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <%
     response.setHeader("Pragma", "No-cache");
@@ -49,7 +50,9 @@
                    url : "serve_login",
                    data : form.serializeArray(),
                    success : data => {
-                       if(data.status > 0) window.location.href = "index.jsp";
+                       if(data.status > 0) {
+                           window.location.href = "<%=session.getAttribute("currentpage")%>";
+                       }
                        message.text(data.message);
                    },
                    error : err => {
