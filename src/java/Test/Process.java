@@ -184,7 +184,7 @@ public class Process {
         JSONObject x = new JSONObject();
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select name, details, cost, offer from items where id = ? and stock > 0");
+            PreparedStatement stmt = conn.prepareStatement("select name, details, cost, offer, stock from items where id = ? and stock > 0");
             stmt.setInt(1, product_id);
             ResultSet res = stmt.executeQuery();
             
@@ -193,6 +193,7 @@ public class Process {
                 x.put("details", res.getString(2));
                 x.put("cost", res.getInt(3));
                 x.put("offer", res.getInt(4));
+                x.put("stock", res.getInt(5));
             }
             
             conn.close();
@@ -205,102 +206,23 @@ public class Process {
         return x;
     }
     
-    int getOfferOnProduct(Connection conn, int product_id) {
-        int offer = -1;
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select offer from items where id = ?");
-            stmt.setInt(1, product_id);
-            ResultSet res = stmt.executeQuery();
-            
-            if(res.next()) {
-                offer = res.getInt(1);
-            }
-        }
-        
-        catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return offer;
-    }
-    
-    String getNameOfProduct(Connection conn, int product_id) {
-        String name = null;
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select name from items where id = ?");
-            stmt.setInt(1, product_id);
-            ResultSet res = stmt.executeQuery();
-            
-            if(res.next()) {
-                name = res.getString(1);
-            }
-        }
-        
-        catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return name;
-    }
-    
-    int getPriceOfProduct(Connection conn, int product_id) {
-        
-        int cost = -1;
-        
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select cost from items where id = ?");
-            stmt.setInt(1, product_id);
-            
-            ResultSet res = stmt.executeQuery();
-            
-            if(res.next()) {
-                cost = res.getInt(1);
-            }
-            
-        } catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return cost;
-    }
-    
-    JSONObject getDetailsForCart(Connection conn, int product_id) {
-        JSONObject x = new JSONObject();
-        try {
-            PreparedStatement stmt = conn.prepareStatement("select name, cost, offer from items where id = ? and stock > 0");
-            stmt.setInt(1, product_id);
-            ResultSet res = stmt.executeQuery();
-            
-            while(res.next()) {
-                x.put("name", res.getString(1));
-                x.put("cost", res.getInt(2));
-                x.put("offer", res.getInt(3));
-            }
-            
-            conn.close();
-        }
-        
-        catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return x;
-    }
-    
-    JSONObject getCartProducts(int customer_id) {
+    public JSONObject getCartProducts(int customer_id) {
         
         JSONObject x = new JSONObject();
+        
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select item_id, qty from offers where cust_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("select item_id, qty, name, cost, offer from cart join items on(item_id = id)  where cust_id = ? and active = 1");
             stmt.setInt(1, customer_id);
             
             ResultSet res = stmt.executeQuery();
             while(res.next()) {
-                int item_id = res.getInt(1);
-                JSONObject item = getDetailsForCart(conn, item_id);
+                JSONObject item = new JSONObject();
                 item.put("qty", res.getInt(2));
-                x.put(item_id, item);
+                item.put("name", res.getString(3));
+                item.put("cost", res.getInt(4));
+                item.put("offer", res.getInt(5));
+                x.put(res.getInt(1), item);
             }
             
             conn.close();
@@ -313,38 +235,38 @@ public class Process {
         return x;
     }
     
+    Boolean productQuantityViable(int product_id, int qty) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select stock from items where id = ?");
+            stmt.setInt(1, product_id);
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next() && res.getInt(1) >= qty) status = true;
+            conn.close();
+            
+        }
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status && (qty >= 0);
+    }
+    
     Boolean addToCart(int customer_id, int product_id) {
         Boolean status = false;
         
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select qty from cart where cust_id = ? and item_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("insert into cart(cust_id, item_id) values(?, ?)");
             stmt.setInt(1, customer_id);
             stmt.setInt(2, product_id);
-            
-            ResultSet res = stmt.executeQuery();
-            int qty = 0;
-            
-            if(res.next()) {
-                qty = res.getInt(1);
-                stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
-                stmt.setInt(1, qty + 1);
-                stmt.setInt(2, customer_id);
-                stmt.setInt(3, product_id);
-                
-                stmt.execute();
-            }
-            
-            else {
-                stmt = conn.prepareStatement("insert into cart(cust_id, item_id, qty) values(?, ?, ?)");
-                stmt.setInt(1, customer_id);
-                stmt.setInt(2, product_id);
-                stmt.setInt(3, qty + 1);
-                
-                stmt.execute();
-            }
+
+            stmt.execute();
             
             logCustomerAction(conn, customer_id, String.valueOf(product_id), CustLogs.ADD_TO_CART);
+            conn.close();
             status = true;            
         }
         catch (Exception e) {
@@ -359,31 +281,11 @@ public class Process {
         
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select qty from cart where cust_id = ? and item_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("delete from cart where c_id = ? and p_id = ?");
             stmt.setInt(1, customer_id);
             stmt.setInt(2, product_id);
-            
-            ResultSet res = stmt.executeQuery();
-            
-            if(res.next()) {
-                int qty = res.getInt(1);
-                if(qty > 1) {
-                    stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
-                    stmt.setInt(1, qty - 1);
-                    stmt.setInt(2, customer_id);
-                    stmt.setInt(3, product_id);
 
-                    stmt.execute();
-                }
-                
-                else {
-                    stmt = conn.prepareStatement("delete from cart where c_id = ? and p_id = ?");
-                    stmt.setInt(1, customer_id);
-                    stmt.setInt(2, product_id);
-
-                    stmt.execute();
-                }
-            }
+            stmt.execute();
             
             logCustomerAction(conn, customer_id, String.valueOf(product_id), CustLogs.RMV_FROM_CART);
             status = true;            
@@ -395,7 +297,27 @@ public class Process {
         return status;
     }
     
-    Boolean checkInCart(int customer_id, int product_id) {
+    Boolean updateCart(int customer_id, int product_id, int qty) {
+        Boolean status = productQuantityViable(product_id, qty);
+        if(!status) return false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
+            stmt.setInt(1, qty);
+            stmt.setInt(2, customer_id);
+            stmt.setInt(3, product_id);
+            stmt.execute();
+            conn.close();
+            status = true;
+        }
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    public Boolean checkInCart(int customer_id, int product_id) {
         Boolean status = false;
         
         try {
@@ -412,6 +334,7 @@ public class Process {
             Helper.handleError(e);
         }
         
+        System.out.println(product_id + " " + status);        
         return status;
         
     }

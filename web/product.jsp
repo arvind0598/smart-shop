@@ -18,8 +18,13 @@
     }
     
     JSONObject product = new Test.Process().getProductDetails(item_id);
+    Boolean inCart = false;
+    if(session.getAttribute("login") != null) {
+        inCart = new Test.Process().checkInCart((Integer)session.getAttribute("login"), item_id);
+    }
     request.setAttribute("product", product);
     request.setAttribute("product_id", item_id);
+    request.setAttribute("in_cart", inCart);
     session.setAttribute("currentpage", "product.jsp?" + request.getQueryString());
 %>
 
@@ -45,7 +50,14 @@
             <p> ${product.details} </p>
         </div>
         <c:if test="${sessionScope.login ne null}">
-            <button id="add"> Add To Cart </button>
+            <c:choose>
+                <c:when test="${in_cart eq false}">
+                    <button id="add"> Add To Cart </button>
+                </c:when>
+                <c:otherwise>
+                    <button id="check"> View Cart </button>
+                </c:otherwise>
+            </c:choose>            
         </c:if>
         <p id="message"></p>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
@@ -65,7 +77,8 @@
                     },
                     success : data => {
                         console.log(data);
-                        message.text(data.message);
+                        alert(data.message);
+                        window.location.reload(true);
                     },
                     error : err => {
                         console.log(err);
