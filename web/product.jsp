@@ -86,6 +86,10 @@
                     } 
                 });
             });
+            
+            $("#check").on("click", event => {
+                window.location = "cart.jsp";
+            });
         </script>
     </body>
 </html>

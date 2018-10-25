@@ -59,6 +59,7 @@
                 <th> Actions </th> 
             </tr>
             <c:set var="totalCost" value="${0}"/>
+            <c:set var="totalSavings" value="${0}"/>
             <c:forEach items="${products}" var="product">
                 <tr>
                     <c:set var="effectiveCost" value="${product.value.cost - product.value.offer}"/>
@@ -79,6 +80,7 @@
                     </td>
                     <c:set var="subCost" value="${effectiveCost * product.value.qty}"/>
                     <c:set var="totalCost" value="${totalCost + subCost}"/>
+                    <c:set var="totalSavings" value="${totalSavings + product.value.offer * product.value.qty}"/>
                     <td> 
                         ${subCost} 
                     </td>
@@ -90,6 +92,8 @@
             </c:forEach>    
         </table>
         <p><b> Total Cost: ${totalCost} </b></p>  
+        <p><b> Total Savings: ${totalSavings} </b></p>  
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
         </script>
         
@@ -113,25 +117,6 @@
                     } 
                 });
             }
-            
-            
-//            $(document).on("click", ".add", e => {
-//                e.preventDefault();
-//                console.log($(this));
-//                let id = $(this).data("id");
-//                let qty = $(this).data("qty");
-//                console.log(id, qty);
-//                updateCart(id, qty + 1);
-//            });
-//            
-//            $(".remove").on("click", () => {
-//                let id = $(this).data("id");
-//                let qty = $(this).data("qty");
-//                updateCart(id, qty - 1);
-//            });
-            
-            
-            
             
         </script>
     </body>
