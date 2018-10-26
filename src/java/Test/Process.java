@@ -23,8 +23,6 @@ public class Process {
     
     enum CustLogs {
         CHECKOUT,
-        ADD_TO_CART,
-        RMV_FROM_CART,
         TXN_SUCCESS,
         TXN_FAILURE,
         FEEDBACK;
@@ -313,50 +311,7 @@ public class Process {
         
         return status && (qty >= 0);
     }
-    
-    Boolean addToCart(int customer_id, int product_id) {
-        Boolean status = false;
-        
-        try {
-            Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("insert into cart(cust_id, item_id) values(?, ?)");
-            stmt.setInt(1, customer_id);
-            stmt.setInt(2, product_id);
-
-            stmt.execute();
-            
-            logCustomerAction(conn, customer_id, String.valueOf(product_id), CustLogs.ADD_TO_CART);
-            conn.close();
-            status = true;            
-        }
-        catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return status;
-    }
-    
-    Boolean removeFromCart(int customer_id, int product_id) {
-        Boolean status = false;
-        
-        try {
-            Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("delete from cart where c_id = ? and p_id = ?");
-            stmt.setInt(1, customer_id);
-            stmt.setInt(2, product_id);
-
-            stmt.execute();
-            
-            logCustomerAction(conn, customer_id, String.valueOf(product_id), CustLogs.RMV_FROM_CART);
-            status = true;            
-        }
-        catch (Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return status;
-    }
-    
+   
     Boolean updateCart(int customer_id, int product_id, int qty) {
         Boolean status = productQuantityViable(product_id, qty);
         if(!status) return false;

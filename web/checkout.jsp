@@ -1,12 +1,13 @@
 <%-- 
-    Document   : cart
-    Created on : 25 Oct, 2018, 10:36:15 PM
+    Document   : checkout
+    Created on : 27 Oct, 2018, 12:08:53 AM
     Author     : de-arth
 --%>
 
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="org.json.simple.JSONObject" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
     response.setHeader("Pragma", "No-cache");
@@ -19,15 +20,15 @@
         return;
     }
     JSONObject products = new Test.Process().getCartProducts(x);
-    Boolean hasAddress = new Test.Process().getCustomerDetails(x).get("address") != null;
+    JSONObject details = new Test.Process().getCustomerDetails(x);
     request.setAttribute("products", products);
-    session.setAttribute("has_address", hasAddress);
+    request.setAttribute("details", details);
 %>
 
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Cart | S Mart</title>
+        <title>Checkout | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="main.css" rel="stylesheet"/>
@@ -59,7 +60,6 @@
                 <th> Cost </th>
                 <th> Quantity </th>
                 <th> Sub Total Cost </th>
-                <th> Actions </th> 
             </tr>
             <c:set var="totalCost" value="${0}"/>
             <c:set var="totalSavings" value="${0}"/>
@@ -67,7 +67,7 @@
                 <tr>
                     <c:set var="effectiveCost" value="${product.value.cost - product.value.offer}"/>
                     <td>
-                        <img src="images/${product.key}.png" style="width:100px"/>
+                        <img src="images/${product.key}.png" style="width:20px"/>
                     </td>
                     <td>
                         <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
@@ -87,55 +87,47 @@
                     <td> 
                         ${subCost} 
                     </td>
-                    <td>
-                        <button class="add" onclick="updateCart(${product.key},${product.value.qty + 1})"> + </button>
-                        <button class="remove" onclick="updateCart(${product.key},${product.value.qty - 1})"> - </button>
-                    </td>
                 </tr>
             </c:forEach>    
         </table>
-        <p><b> Total Cost: ${totalCost} </b></p>  
-        <p><b> Total Savings: ${totalSavings} </b></p>
-        <c:if test="${totalCost ne 0}">
-            <button onclick="checkOut()"> Proceed to Checkout </button>
-        </c:if>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
-        </script>
+            
+        <fmt:formatNumber var="maxPoints" value="${totalCost/2}" type="number" pattern="#" />
+        <fmt:formatNumber var="currPoints" value="${details.points}" type="number" pattern="#"/>
+        <c:set value="${maxPoints > currPoints ? currPoints: maxPoints}" var="allowedPoints"/>
+            
+        <p><b> Total Effective Cost:</b> <span id="total">${totalCost}</span></p>
+        <p>Do you want to apply ${allowedPoints} points? </p>
+        <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()"> 
+        <p><b> Total Savings:</b> <span id="savings">${totalSavings}</span></p>
         
-        <script>
-            
-            const updateCart = (id, qty) => {
-                $.ajax({
-                    type : "POST",
-                    url : "serve_updatecart",
-                    data : {
-                        "id" : id,
-                        "qty" : qty
-                    },
-                    success : data => {
-                        console.log(data);
-                        window.location.reload(true);
-                    },
-                    error : err => {
-                        console.log(err);
-                        message.text("There has been a server error. Please try again.");
-                    } 
-                });
-            }
-            
-            const checkOut = () => {
-                <c:choose>
-                    <c:when test="${sessionScope.has_address}">
-                        window.location.href="checkout.jsp";
-                    </c:when>
-                    <c:otherwise>
-                        alert("Please enter address");
-                        window.location.href="profile.jsp";
-                    </c:otherwise>
-                </c:choose>
-            }
-            
-        </script>
+        <button onclick="confirmOrder()"> Confirm Order </button>
     </body>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
+    </script>
+
+    <script>
+        let totalWithoutPoints = ${totalCost};
+        let totalSavings = ${totalSavings};
+        let points = ${allowedPoints};
+        
+        let checkbox = $("#use_points");
+        let spanTotal = $("#total");
+        let spanSavings = $("#savings");
+        
+        const usePoints = () => {
+            console.log("aa");
+            console.log(checkbox.prop("checked"));
+            if(checkbox.prop("checked")) {
+                spanTotal.text(totalWithoutPoints - points);
+                spanSavings.text(totalSavings + points);
+            }
+            else {
+                spanTotal.text(totalWithoutPoints);
+                spanSavings.text(totalSavings);
+            }
+        }
+        
+        
+    </script>
 </html>

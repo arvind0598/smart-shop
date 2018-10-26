@@ -48,6 +48,7 @@ CREATE TABLE `orders` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`cust_id` int NOT NULL,
 	`bill` int NOT NULL,
+	`paid` int NOT NULL DEFAULT '0',
 	`status` int NOT NULL DEFAULT '0',
 	`time_performed` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`feedback` varchar(200),

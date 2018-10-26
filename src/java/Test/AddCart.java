@@ -78,7 +78,7 @@ public class AddCart extends HttpServlet {
             int cust_id = Integer.parseInt(temp_cust_id);
             int item_id = Integer.parseInt(temp_item_id);
                     
-            Boolean status = x.addToCart(cust_id, item_id);
+            Boolean status = x.updateCart(cust_id, item_id, 1);
             if(!status) {
                 obj.put("status", 0);
                 obj.put("message", "Unable to add to cart.");
