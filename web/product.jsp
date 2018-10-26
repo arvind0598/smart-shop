@@ -38,7 +38,6 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div id="product"></div>
         <div>
             <img src="images/${product_id}.png"/>
             <p>

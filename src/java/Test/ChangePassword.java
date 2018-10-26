@@ -20,9 +20,9 @@ import org.json.simple.JSONObject;
  *
  * @author de-arth
  */
-@WebServlet(name = "Register", urlPatterns = {"/serve_register"})
-public class Register extends HttpServlet {
-    
+@WebServlet(name = "ChangePassword", urlPatterns = {"/serve_changepass"})
+public class ChangePassword extends HttpServlet {
+
     Process x = new Process();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -56,21 +56,22 @@ public class Register extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
-
-        String useremail = request.getParameter("email");
-        String username = request.getParameter("name");
-        String password = request.getParameter("password");
+        HttpSession sess = request.getSession();
+        JSONObject obj = new JSONObject();
+        
+        String useremail = ((JSONObject)sess.getAttribute("details")).get("email").toString();
+        String currPassword = request.getParameter("curr_pass");
+        String newPassword = request.getParameter("new_pass");
         
         Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
         Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
         
-        // add password and name validation here
-        Boolean password_correct = true;
-        Boolean username_correct = true;
+        // add password validation here
+        Boolean curr_password_correct = true;
+        Boolean new_password_correct = true;
         
-        if(!useremail_correct || !password_correct || !username_correct) {
+        if(!useremail_correct || !curr_password_correct || !new_password_correct) {
             try (PrintWriter out = response.getWriter()) {
-                JSONObject obj = new JSONObject();
                 obj.put("status", -1);
                 obj.put("message", "Input provided was not valid.");
                 out.println(obj);
@@ -79,19 +80,28 @@ public class Register extends HttpServlet {
             return;
         } 
         
-        String hashedPassword = Helper.hashPassword(password);
-        Boolean status = x.registerUser(username, useremail, hashedPassword);
-
-        try (PrintWriter out = response.getWriter()) {
-            HttpSession sess = request.getSession();
-            JSONObject obj = new JSONObject();
-            
-            obj.put("status", status);
-            String message = status ? "Registration successful" : "Registration unsuccessful";
-            obj.put("message", message);
-            out.println(obj);
-            out.close();
+        String hashedCurrPassword = Helper.hashPassword(currPassword);
+        int currUser = x.checkUser(useremail, hashedCurrPassword, true);
+        
+        if(currUser <= 0) {
+            try (PrintWriter out = response.getWriter()) {
+                obj.put("status", 0);
+                obj.put("message", "Current password does not match.");
+                out.println(obj);
+                out.close();                
+            }             
+            return;
         }
+        
+        String hashedNewPassword = Helper.hashPassword(newPassword);
+        x.changePassword(currUser, hashedNewPassword);
+        try (PrintWriter out = response.getWriter()) {
+            obj.put("status", 1);
+            obj.put("message", "Succesfully changed Password");
+            out.println(obj);
+            out.close();                
+        }      
+        
     }
 
     /**
@@ -101,7 +111,6 @@ public class Register extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "servlet registers a user";
+        return "servlet changes password for a user";
     }// </editor-fold>
-
 }

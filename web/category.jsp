@@ -36,7 +36,7 @@
         <div>
             <c:forEach items="${products}" var="product">
                 <div>
-                    <img src="images/${product.key}.png"/>
+                    <img src="images/${product.key}.png" style="width:100px"/>
                     <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
                     <p>
                         <c:if test="${product.value.offer ne 0}">

@@ -22,7 +22,6 @@ public class Process {
     }
     
     enum CustLogs {
-        ADD_ADDRESS,
         CHECKOUT,
         ADD_TO_CART,
         RMV_FROM_CART,
@@ -130,6 +129,67 @@ public class Process {
         }
         
         return status;
+    }
+    
+    Boolean changePassword(int customer_id, String password) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("update login set password = ? where id = ?");
+            stmt.setString(1, password);
+            stmt.setInt(2, customer_id);
+            stmt.execute();
+            conn.close();
+            status = true;            
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    Boolean changeAddress(int customer_id, String address) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("update login set address = ? where id = ?");
+            stmt.setString(1, address);
+            stmt.setInt(2, customer_id);
+            stmt.execute();
+            conn.close();
+            status = true;        
+        } catch(Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    public JSONObject getCustomerDetails(int customer_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select email, name, address, points from login where id = ?");
+            stmt.setInt(1, customer_id);
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                x.put("email", res.getString(1));
+                x.put("name", res.getString(2));
+                x.put("address", res.getString(3));
+                x.put("points", res.getInt(4));
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
     }
     
     public JSONObject getCategories() {
@@ -302,7 +362,8 @@ public class Process {
         if(!status) return false;
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
+//            PreparedStatement stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
+            CallableStatement stmt = conn.prepareCall("call update_cart_qty(?, ?, ?)");
             stmt.setInt(1, qty);
             stmt.setInt(2, customer_id);
             stmt.setInt(3, product_id);
@@ -337,27 +398,6 @@ public class Process {
         System.out.println(product_id + " " + status);        
         return status;
         
-    }
-    
-    Boolean setUserDetails(int id, String address) {
-        Boolean status = false;
-        try {
-            Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("update login set address = ? where id = ?");
-            stmt.setString(1, address);
-            stmt.setInt(2, id);
-            stmt.execute();
-            
-            logCustomerAction(conn, id, null, CustLogs.ADD_ADDRESS);
-            status = true;
-            
-            conn.close();
-            
-        } catch(Exception e) {
-            Helper.handleError(e);
-        }
-        
-        return status;
     }
     
     void logAccessAction(Connection conn, String username, AccessLogs type) {
@@ -405,8 +445,6 @@ public class Process {
 }
 
 class Helper {
-    // implement password hashing here as a public static method
-    // further, call it in registerUser before storing password
     
     public static void handleError(Exception e) {
         try {
@@ -414,5 +452,9 @@ class Helper {
         } catch(Exception anotherOne) {
             System.out.println(anotherOne.toString());
         }
+    }
+    
+    public static String hashPassword(String pass) {
+        return pass;
     }
 }

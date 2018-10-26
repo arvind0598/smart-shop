@@ -33,6 +33,10 @@
             form.on("submit", event => {
                event.preventDefault();
                event.stopPropagation();
+               if($("#pass").val() !== $("#conf_pass").val()) {
+                   alert("Passwords do not match.");
+                   return false;
+               }
                $.ajax({
                    type : "POST",
                    url : "serve_register",

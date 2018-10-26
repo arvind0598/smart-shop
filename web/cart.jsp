@@ -14,11 +14,14 @@
     response.setDateHeader("Expires", -1);
     
     Integer x = (Integer)session.getAttribute("login");
-    if(x == null || x < 1) {
+    if(x == null || x < 1) { 
         response.sendRedirect("index.jsp");
+        return;
     }
     JSONObject products = new Test.Process().getCartProducts(x);
+    Boolean hasAddress = new Test.Process().getCustomerDetails(x).get("address") != null;
     request.setAttribute("products", products);
+    session.setAttribute("has_address", hasAddress);
 %>
 
 <!DOCTYPE html>
@@ -64,7 +67,7 @@
                 <tr>
                     <c:set var="effectiveCost" value="${product.value.cost - product.value.offer}"/>
                     <td>
-                        <img src="images/${product.key}.png"/>
+                        <img src="images/${product.key}.png" style="width:100px"/>
                     </td>
                     <td>
                         <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
@@ -92,7 +95,8 @@
             </c:forEach>    
         </table>
         <p><b> Total Cost: ${totalCost} </b></p>  
-        <p><b> Total Savings: ${totalSavings} </b></p>  
+        <p><b> Total Savings: ${totalSavings} </b></p>
+        <button onclick="checkOut()"> Proceed to Checkout </button>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
         </script>
@@ -116,6 +120,18 @@
                         message.text("There has been a server error. Please try again.");
                     } 
                 });
+            }
+            
+            const checkOut = () => {
+                <c:choose>
+                    <c:when test="${sessionScope.has_address}">
+                        window.location.href="checkout.jsp";
+                    </c:when>
+                    <c:otherwise>
+                        alert("Please enter address");
+                        window.location.href="profile.jsp";
+                    </c:otherwise>
+                </c:choose>
             }
             
         </script>
