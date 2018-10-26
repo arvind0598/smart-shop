@@ -5,6 +5,7 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+web/images/*
 
 *.class
 src/java/Test/Credentials.java
