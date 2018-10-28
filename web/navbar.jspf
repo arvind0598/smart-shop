@@ -4,8 +4,8 @@
 
 <header>
     <a href="index.jsp" class="stayleft"> S MART </a>
-    <form>
-        <input type="text" name="search" placeholder="Search for products and more..."/>
+    <form action="search.jsp" method="GET">
+        <input id="search" type="text" name="search" placeholder="Search for products and more..."/>
         <input type="submit" hidden/>
     </form>
     <c:choose>

@@ -7,6 +7,7 @@ package Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,15 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
-import java.util.regex.*;
 
 /**
  *
  * @author de-arth
  */
-@WebServlet(name = "AddCart", urlPatterns = {"/serve_addcart"})
-public class AddCart extends HttpServlet {
-    
+@WebServlet(name = "Checkout", urlPatterns = {"/serve_checkout"})
+public class Checkout extends HttpServlet {
+
     Process x = new Process();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -60,33 +60,31 @@ public class AddCart extends HttpServlet {
         JSONObject obj = new JSONObject();
         
         String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
-        String temp_item_id = request.getParameter("id");
+        String temp_point_status = request.getParameter("points");
         
         Pattern numbers_only = Pattern.compile("^[0-9]+$");
         Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
-        Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();
+        Boolean point_status = Boolean.valueOf(temp_point_status);
+        
+        int order_id = -1;
 
         if(!cust_id_valid) {
             obj.put("status", -1);
             obj.put("message", "Login to add to cart.");
         }
-        else if(!item_id_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Invalid Request");
-        }
         else {
             int cust_id = Integer.parseInt(temp_cust_id);
-            int item_id = Integer.parseInt(temp_item_id);
+            System.out.println(cust_id + " " + point_status);
                     
-            Boolean status = x.updateCart(cust_id, item_id, 1);
-            if(!status) {
+            order_id = x.checkoutOrder(cust_id, point_status);
+            if(order_id < 1) {
                 obj.put("status", 0);
-                obj.put("message", "Unable to add to cart.");
+                obj.put("message", "There was an error.");
             }
             
             else {
                 obj.put("status", 1);
-                obj.put("message", "Succesfully added item.");
+                obj.put("message", "Succesfully placed order. Pay to continue.");
             }
             
         }
@@ -94,6 +92,11 @@ public class AddCart extends HttpServlet {
             out.println(obj);
             out.close();
         }
+        
+        sess.setAttribute("order_id", order_id);
+        sess.setAttribute("used_points", point_status);
+        sess.removeAttribute("details");
+        sess.removeAttribute("products");
     }
 
     /**
@@ -103,7 +106,7 @@ public class AddCart extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "adds a given item to a cart";
+        return "checks out a customer";
     }// </editor-fold>
 
 }

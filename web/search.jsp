@@ -1,6 +1,6 @@
 <%-- 
-    Document   : category
-    Created on : 24 Oct, 2018, 7:39:10 PM
+    Document   : search
+    Created on : 28 Oct, 2018, 6:28:42 PM
     Author     : de-arth
 --%>
 
@@ -9,23 +9,24 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <%
-    Integer cat_id = null;
+    String str = null;
     try {
-        cat_id = new Integer(request.getParameter("id"));
-        if(cat_id < 1) throw new Exception();
+        str = request.getParameter("search");
+        if(str == null) throw new Exception();
+        str = str.trim().toLowerCase();
     }
     catch(Exception e) {
         response.sendRedirect("index.jsp");
     }
-    JSONObject products = new Test.Process().getProducts(cat_id);
+    JSONObject products = new Test.Process().searchProducts(str);
     request.setAttribute("products", products);
-    session.setAttribute("currentpage", "category.jsp?" + request.getQueryString());
+    session.setAttribute("currentpage", "search.jsp?" + request.getQueryString());
 %>
 
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Categories | S Mart</title>
+        <title>Search | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="main.css" rel="stylesheet"/>

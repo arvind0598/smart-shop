@@ -23,8 +23,6 @@ public class Process {
     
     enum CustLogs {
         CHECKOUT,
-        TXN_SUCCESS,
-        TXN_FAILURE,
         FEEDBACK;
     }
     
@@ -89,10 +87,11 @@ public class Process {
             
             // check if user id exists not done because duplicate entry violates constraint and hence returns false
             
-            stmt = conn.prepareStatement("insert into login(email, password, name) values(?, ?)");
+            stmt = conn.prepareStatement("insert into login(email, password, name) values(?, ?, ?)");
             stmt.setString(1, email);
             stmt.setString(2, password);
             stmt.setString(3, name);
+            stmt.execute();
             
             logAccessAction(conn, email, AccessLogs.REGISTER);
             status = true;
@@ -163,6 +162,31 @@ public class Process {
         }
         
         return status;
+    }
+    
+    public JSONObject searchProducts(String str) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select items.id, items.name, cost, offer from items join categories on(cat_id = categories.id) and keywords like ?");
+            stmt.setString(1, "%" + str + "%");
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                JSONObject item = new JSONObject();
+                item.put("name", res.getString(2));
+                item.put("cost", res.getInt(3));
+                item.put("offer", res.getInt(4));
+                x.put(res.getInt(1), item);
+            }
+            
+            conn.close();             
+        }
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
     }
     
     public JSONObject getCustomerDetails(int customer_id) {
@@ -353,6 +377,49 @@ public class Process {
         System.out.println(product_id + " " + status);        
         return status;
         
+    }
+    
+    int checkoutOrder(int customer_id, Boolean points) {
+        int order_id = -1;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call make_order_from_cart(?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, customer_id);
+            stmt.setInt(3, points ? 1 : 0);
+            stmt.execute();
+            
+            order_id = stmt.getInt(1);
+            conn.close();
+        }
+        catch(Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return order_id;
+    }
+    
+    public JSONArray getOrderItems(int order_id) {
+        JSONArray arr = new JSONArray();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select item_id, qty from order_items where order_id = ?");
+            stmt.setInt(1, order_id);
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                JSONObject x = new JSONObject();
+                x.put("item_id", res.getInt(1));
+                x.put("qty", res.getInt(2));
+                arr.add(x);
+            }
+            
+        }
+        catch(Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return arr;
     }
     
     void logAccessAction(Connection conn, String username, AccessLogs type) {

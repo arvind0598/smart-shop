@@ -63,6 +63,8 @@ public class UpdateCart extends HttpServlet {
         String temp_item_id = request.getParameter("id");
         String temp_qty = request.getParameter("qty");
         
+        if(temp_qty == null) temp_qty = "1";
+        
         Pattern numbers_only = Pattern.compile("^[0-9]+$");
         Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
         Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();

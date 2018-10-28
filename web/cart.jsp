@@ -7,6 +7,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="org.json.simple.JSONObject" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
     response.setHeader("Pragma", "No-cache");
@@ -19,8 +20,10 @@
         return;
     }
     JSONObject products = new Test.Process().getCartProducts(x);
-    Boolean hasAddress = new Test.Process().getCustomerDetails(x).get("address") != null;
-    request.setAttribute("products", products);
+    JSONObject details = new Test.Process().getCustomerDetails(x);
+    Boolean hasAddress = details.get("address") != null;
+    session.setAttribute("products", products);
+    session.setAttribute("details", details);
     session.setAttribute("has_address", hasAddress);
 %>
 
@@ -61,13 +64,13 @@
                 <th> Sub Total Cost </th>
                 <th> Actions </th> 
             </tr>
-            <c:set var="totalCost" value="${0}"/>
-            <c:set var="totalSavings" value="${0}"/>
+            <c:set var="totalCost" value="${0}" scope="session"/>
+            <c:set var="totalSavings" value="${0}" scope="session"/>
             <c:forEach items="${products}" var="product">
                 <tr>
                     <c:set var="effectiveCost" value="${product.value.cost - product.value.offer}"/>
                     <td>
-                        <img src="images/${product.key}.png" style="width:100px"/>
+                        <img src="images/${product.key}.png" style="width:20px"/>
                     </td>
                     <td>
                         <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
@@ -82,8 +85,8 @@
                         ${product.value.qty} 
                     </td>
                     <c:set var="subCost" value="${effectiveCost * product.value.qty}"/>
-                    <c:set var="totalCost" value="${totalCost + subCost}"/>
-                    <c:set var="totalSavings" value="${totalSavings + product.value.offer * product.value.qty}"/>
+                    <c:set var="totalCost" value="${totalCost + subCost}" scope="session"/>
+                    <c:set var="totalSavings" value="${totalSavings + product.value.offer * product.value.qty}" scope="session"/>
                     <td> 
                         ${subCost} 
                     </td>
@@ -94,11 +97,12 @@
                 </tr>
             </c:forEach>    
         </table>
-        <p><b> Total Cost: ${totalCost} </b></p>  
-        <p><b> Total Savings: ${totalSavings} </b></p>
+        <p><b> Total Effective Cost:</b> <span id="total">${sessionScope.totalCost}</span></p>
+        
         <c:if test="${totalCost ne 0}">
-            <button onclick="checkOut()"> Proceed to Checkout </button>
+            <button onclick="checkOut()"> Proceed to Payment </button>
         </c:if>
+        <p> Note: To change address, visit your profile. </p>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
         </script>
@@ -127,7 +131,7 @@
             const checkOut = () => {
                 <c:choose>
                     <c:when test="${sessionScope.has_address}">
-                        window.location.href="checkout.jsp";
+                        window.location.href="payment.jsp";
                     </c:when>
                     <c:otherwise>
                         alert("Please enter address");

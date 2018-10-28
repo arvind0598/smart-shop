@@ -70,7 +70,7 @@
                 event.stopPropagation();
                 $.ajax({
                     type : "POST",
-                    url : "serve_addcart",
+                    url : "serve_updatecart",
                     data : {
                         "id" : id
                     },

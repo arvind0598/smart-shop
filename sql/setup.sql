@@ -13,7 +13,7 @@ CREATE TABLE `login` (
 	`password` varchar(30) NOT NULL,
 	`level` int NOT NULL DEFAULT '0',
 	`name` varchar(30),
-	`address` varchar(100) DEFAULT '0',
+	`address` varchar(100),
 	`registered_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`points` int DEFAULT '0',
 	PRIMARY KEY (`id`)
@@ -103,3 +103,7 @@ ALTER TABLE `order_items` ADD CONSTRAINT `order_items_fk1` FOREIGN KEY (`item_id
 ALTER TABLE `admin_logs` ADD CONSTRAINT `admin_logs_fk0` FOREIGN KEY (`admin_id`) REFERENCES `login`(`id`);
 
 ALTER TABLE `cust_logs` ADD CONSTRAINT `cust_logs_fk0` FOREIGN KEY (`cust_id`) REFERENCES `login`(`id`);
+
+source ~/Desktop/projects/smart-shop/sql/data.sql
+source ~/Desktop/projects/smart-shop/sql/more.sql
+

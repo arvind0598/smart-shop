@@ -4,6 +4,7 @@
     Author     : de-arth
 --%>
 
+<%@page import="org.json.simple.JSONArray"%>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ page import="org.json.simple.JSONObject" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
@@ -24,7 +25,6 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div> Project is now running for <%=session.getAttribute("login")%></div>
         <div>
             <c:forEach items="${categories}" var="cat">
                 <a href="category.jsp?id=${cat.key}"> ${cat.value} </a>
