@@ -10,7 +10,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <% 
-    JSONObject categories = new Test.Process().getCategories();
+    JSONObject categories = new Project.Process().getCategories();
     request.setAttribute("categories", categories);
     session.setAttribute("currentpage", "index.jsp");
 %>

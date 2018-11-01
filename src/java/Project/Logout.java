@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,15 +36,29 @@ public class Logout extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession sess = request.getSession();
+        Integer admin = (Integer)sess.getAttribute("admlogin");
         Integer status = (Integer)sess.getAttribute("login");
-        if(status == null) {
-            response.sendRedirect("index.jsp");
-            return;
+        
+        Boolean allow = false;
+        String target = "index.jsp";
+
+        if(admin != null) {
+            allow = x.logoutUser(admin);
+            if(allow) {
+                target = "admin/index.jsp";
+            } 
         }
-        Boolean allow = x.logoutUser(status);
+        
+        else if(status != null) {
+            allow = x.logoutUser(status);
+            if(allow) {
+                target = "index.jsp";
+            } 
+        }
+        
         if(!allow) return;
         request.getSession().invalidate();
-        response.sendRedirect("index.jsp");        
+        response.sendRedirect(target);        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

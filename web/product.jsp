@@ -17,10 +17,10 @@
         response.sendRedirect("index.jsp");
     }
     
-    JSONObject product = new Test.Process().getProductDetails(item_id);
+    JSONObject product = new Project.Process().getProductDetails(item_id);
     Boolean inCart = false;
     if(session.getAttribute("login") != null) {
-        inCart = new Test.Process().checkInCart((Integer)session.getAttribute("login"), item_id);
+        inCart = new Project.Process().checkInCart((Integer)session.getAttribute("login"), item_id);
     }
     request.setAttribute("product", product);
     request.setAttribute("product_id", item_id);

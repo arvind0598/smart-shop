@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,8 +20,8 @@ import org.json.simple.JSONObject;
  *
  * @author de-arth
  */
-@WebServlet(name = "ChangePassword", urlPatterns = {"/serve_changepass"})
-public class ChangePassword extends HttpServlet {
+@WebServlet(name = "ChangeAddress", urlPatterns = {"/serve_changeadd"})
+public class ChangeAddress extends HttpServlet {
 
     Process x = new Process();
 
@@ -59,18 +59,23 @@ public class ChangePassword extends HttpServlet {
         HttpSession sess = request.getSession();
         JSONObject obj = new JSONObject();
         
-        String useremail = ((JSONObject)sess.getAttribute("details")).get("email").toString();
-        String currPassword = request.getParameter("curr_pass");
-        String newPassword = request.getParameter("new_pass");
+        Integer userid = (Integer)sess.getAttribute("login");
+        String address = request.getParameter("address");
         
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        if(userid == null || userid < 1) {
+            try (PrintWriter out = response.getWriter()) {
+                obj.put("status", -1);
+                obj.put("message", "Please login again to continue.");
+                out.println(obj);
+                out.close();                
+            }             
+            return;
+        } 
         
         // add password validation here
-        Boolean curr_password_correct = true;
-        Boolean new_password_correct = true;
+        Boolean address_correct = true;
         
-        if(!useremail_correct || !curr_password_correct || !new_password_correct) {
+        if(!address_correct) {
             try (PrintWriter out = response.getWriter()) {
                 obj.put("status", -1);
                 obj.put("message", "Input provided was not valid.");
@@ -79,25 +84,11 @@ public class ChangePassword extends HttpServlet {
             }             
             return;
         } 
-        
-        String hashedCurrPassword = Helper.hashPassword(currPassword);
-        int currUser = x.checkUser(useremail, hashedCurrPassword, true);
-        
-        if(currUser <= 0) {
-            try (PrintWriter out = response.getWriter()) {
-                obj.put("status", 0);
-                obj.put("message", "Current password does not match.");
-                out.println(obj);
-                out.close();                
-            }             
-            return;
-        }
-        
-        String hashedNewPassword = Helper.hashPassword(newPassword);
-        x.changePassword(currUser, hashedNewPassword);
+
+        x.changeAddress(userid, address);
         try (PrintWriter out = response.getWriter()) {
             obj.put("status", 1);
-            obj.put("message", "Succesfully changed Password");
+            obj.put("message", "Succesfully changed Address");
             out.println(obj);
             out.close();                
         }      
@@ -111,6 +102,7 @@ public class ChangePassword extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "servlet changes password for a user";
+        return "servlet registers a user";
     }// </editor-fold>
+
 }

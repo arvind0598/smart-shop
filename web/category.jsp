@@ -17,7 +17,7 @@
     catch(Exception e) {
         response.sendRedirect("index.jsp");
     }
-    JSONObject products = new Test.Process().getProducts(cat_id);
+    JSONObject products = new Project.Process().getProducts(cat_id);
     request.setAttribute("products", products);
     session.setAttribute("currentpage", "category.jsp?" + request.getQueryString());
 %>

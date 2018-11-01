@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.sql.*;
 import org.json.simple.*;
@@ -57,7 +57,7 @@ public class Process {
                 
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=?");
+            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=? and level = 0");
             stmt.setString(1, useremail);
             stmt.setString(2, password);
 
@@ -463,6 +463,37 @@ public class Process {
             Helper.handleError(e);
         }
     }
+    
+    //    admin
+    
+    int checkAdmin(String useremail, String password, Boolean internal) {
+        
+        int status = -1;
+                
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=? and level=1");
+            stmt.setString(1, useremail);
+            stmt.setString(2, password);
+
+            ResultSet res = stmt.executeQuery();
+           
+            if(res.next()) {
+                status = res.getInt(1);
+                if(!internal) logAccessAction(conn, useremail, AccessLogs.LOGIN_SUCCESS);
+            } else {
+                if(!internal) logAccessAction(conn, useremail, AccessLogs.LOGIN_FAIL);
+            }
+            
+            conn.close();            
+            
+        } catch (Exception e) {
+            Helper.handleError(e);
+        } 
+        
+        return status;
+    }
+    
     
 }
 

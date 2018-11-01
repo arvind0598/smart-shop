@@ -19,8 +19,8 @@
         response.sendRedirect("index.jsp");
         return;
     }
-    JSONObject products = new Test.Process().getCartProducts(x);
-    JSONObject details = new Test.Process().getCustomerDetails(x);
+    JSONObject products = new Project.Process().getCartProducts(x);
+    JSONObject details = new Project.Process().getCustomerDetails(x);
     Boolean hasAddress = details.get("address") != null;
     session.setAttribute("products", products);
     session.setAttribute("details", details);

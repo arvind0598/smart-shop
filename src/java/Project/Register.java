@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,9 +20,9 @@ import org.json.simple.JSONObject;
  *
  * @author de-arth
  */
-@WebServlet(name = "ChangeAddress", urlPatterns = {"/serve_changeadd"})
-public class ChangeAddress extends HttpServlet {
-
+@WebServlet(name = "Register", urlPatterns = {"/serve_register"})
+public class Register extends HttpServlet {
+    
     Process x = new Process();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -56,27 +56,21 @@ public class ChangeAddress extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
-        HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
+
+        String useremail = request.getParameter("email");
+        String username = request.getParameter("name");
+        String password = request.getParameter("password");
         
-        Integer userid = (Integer)sess.getAttribute("login");
-        String address = request.getParameter("address");
+        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
+        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
         
-        if(userid == null || userid < 1) {
+        // add password and name validation here
+        Boolean password_correct = true;
+        Boolean username_correct = true;
+        
+        if(!useremail_correct || !password_correct || !username_correct) {
             try (PrintWriter out = response.getWriter()) {
-                obj.put("status", -1);
-                obj.put("message", "Please login again to continue.");
-                out.println(obj);
-                out.close();                
-            }             
-            return;
-        } 
-        
-        // add password validation here
-        Boolean address_correct = true;
-        
-        if(!address_correct) {
-            try (PrintWriter out = response.getWriter()) {
+                JSONObject obj = new JSONObject();
                 obj.put("status", -1);
                 obj.put("message", "Input provided was not valid.");
                 out.println(obj);
@@ -84,15 +78,20 @@ public class ChangeAddress extends HttpServlet {
             }             
             return;
         } 
-
-        x.changeAddress(userid, address);
-        try (PrintWriter out = response.getWriter()) {
-            obj.put("status", 1);
-            obj.put("message", "Succesfully changed Address");
-            out.println(obj);
-            out.close();                
-        }      
         
+        String hashedPassword = Helper.hashPassword(password);
+        Boolean status = x.registerUser(username, useremail, hashedPassword);
+
+        try (PrintWriter out = response.getWriter()) {
+            HttpSession sess = request.getSession();
+            JSONObject obj = new JSONObject();
+            
+            obj.put("status", status);
+            String message = status ? "Registration successful" : "Registration unsuccessful";
+            obj.put("message", message);
+            out.println(obj);
+            out.close();
+        }
     }
 
     /**

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,8 +20,8 @@ import org.json.simple.JSONObject;
  *
  * @author de-arth
  */
-@WebServlet(name = "Checkout", urlPatterns = {"/serve_checkout"})
-public class Checkout extends HttpServlet {
+@WebServlet(name = "UpdateCart", urlPatterns = {"/serve_updatecart"})
+public class UpdateCart extends HttpServlet {
 
     Process x = new Process();
 
@@ -60,31 +60,38 @@ public class Checkout extends HttpServlet {
         JSONObject obj = new JSONObject();
         
         String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
-        String temp_point_status = request.getParameter("points");
+        String temp_item_id = request.getParameter("id");
+        String temp_qty = request.getParameter("qty");
+        
+        if(temp_qty == null) temp_qty = "1";
         
         Pattern numbers_only = Pattern.compile("^[0-9]+$");
         Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
-        Boolean point_status = Boolean.valueOf(temp_point_status);
-        
-        int order_id = -1;
+        Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();
+        Boolean qty_valid = numbers_only.matcher(temp_qty).matches();
 
         if(!cust_id_valid) {
             obj.put("status", -1);
             obj.put("message", "Login to add to cart.");
         }
+        else if(!item_id_valid || !qty_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Invalid Request");
+        }
         else {
             int cust_id = Integer.parseInt(temp_cust_id);
-            System.out.println(cust_id + " " + point_status);
+            int item_id = Integer.parseInt(temp_item_id);
+            int qty = Integer.parseInt(temp_qty);
                     
-            order_id = x.checkoutOrder(cust_id, point_status);
-            if(order_id < 1) {
+            Boolean status = x.updateCart(cust_id, item_id, qty);
+            if(!status) {
                 obj.put("status", 0);
-                obj.put("message", "There was an error.");
+                obj.put("message", "Unable to update cart.");
             }
             
             else {
                 obj.put("status", 1);
-                obj.put("message", "Succesfully placed order. Pay to continue.");
+                obj.put("message", "Succesfully updated.");
             }
             
         }
@@ -92,11 +99,6 @@ public class Checkout extends HttpServlet {
             out.println(obj);
             out.close();
         }
-        
-        sess.setAttribute("order_id", order_id);
-        sess.setAttribute("used_points", point_status);
-        sess.removeAttribute("details");
-        sess.removeAttribute("products");
     }
 
     /**
@@ -106,7 +108,6 @@ public class Checkout extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "checks out a customer";
+        return "updates an item to a given qty in the cart";
     }// </editor-fold>
-
 }

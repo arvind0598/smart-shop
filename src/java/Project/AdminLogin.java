@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Test;
+package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,8 +20,8 @@ import org.json.simple.JSONObject;
  *
  * @author de-arth
  */
-@WebServlet(name = "UpdateCart", urlPatterns = {"/serve_updatecart"})
-public class UpdateCart extends HttpServlet {
+@WebServlet(name = "AdminLogin", urlPatterns = {"/serve_admlogin"})
+public class AdminLogin extends HttpServlet {
 
     Process x = new Process();
 
@@ -56,49 +56,47 @@ public class UpdateCart extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
-        HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
-        
-        String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
-        String temp_item_id = request.getParameter("id");
-        String temp_qty = request.getParameter("qty");
-        
-        if(temp_qty == null) temp_qty = "1";
-        
-        Pattern numbers_only = Pattern.compile("^[0-9]+$");
-        Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
-        Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();
-        Boolean qty_valid = numbers_only.matcher(temp_qty).matches();
 
-        if(!cust_id_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Login to add to cart.");
-        }
-        else if(!item_id_valid || !qty_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Invalid Request");
-        }
-        else {
-            int cust_id = Integer.parseInt(temp_cust_id);
-            int item_id = Integer.parseInt(temp_item_id);
-            int qty = Integer.parseInt(temp_qty);
-                    
-            Boolean status = x.updateCart(cust_id, item_id, qty);
-            if(!status) {
-                obj.put("status", 0);
-                obj.put("message", "Unable to update cart.");
-            }
-            
-            else {
-                obj.put("status", 1);
-                obj.put("message", "Succesfully updated.");
-            }
-            
-        }
+        String useremail = request.getParameter("useremail");
+        String password = request.getParameter("password");
+        
+        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
+        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        
+        // add password validation here
+        Boolean password_correct = true;
+        
+        if(!useremail_correct || !password_correct) {
+            try (PrintWriter out = response.getWriter()) {
+                JSONObject obj = new JSONObject();
+                obj.put("status", -1);
+                obj.put("message", "Input provided was not valid.");
+                out.println(obj);
+                out.close();                
+            }             
+            return;
+        } 
+       
+        int status = x.checkAdmin(useremail, password, false);
+
         try (PrintWriter out = response.getWriter()) {
+            HttpSession sess = request.getSession();
+            JSONObject obj = new JSONObject();
+            
+            obj.put("status", status);
+            String message = (status > 0) ? "Login successful" : "Login unsuccesful";
+            obj.put("message", message);
             out.println(obj);
             out.close();
+            
+            if(status == -1) {
+                sess.invalidate();
+                return;
+            }
+            
+            sess.setAttribute("admlogin", status);
         }
+                
     }
 
     /**
@@ -108,6 +106,7 @@ public class UpdateCart extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "updates an item to a given qty in the cart";
+        return "a login request processor for admin portal";
     }// </editor-fold>
+
 }

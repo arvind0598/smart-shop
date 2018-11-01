@@ -18,7 +18,7 @@
         response.sendRedirect("index.jsp");
         return;
     }
-    JSONObject details = new Test.Process().getCustomerDetails(x);
+    JSONObject details = new Project.Process().getCustomerDetails(x);
     session.setAttribute("details", details);
 %>
 
