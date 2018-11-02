@@ -36,7 +36,7 @@
         <div class="row">
             <c:forEach items="${products}" var="product">
                 <div class="col s12 m7 l3">
-                    <div class="card">
+                    <div class="card hoverable">
                         <div class="card-image">
                             <img src="images/${product.key}.png" class="responsive-img">
                         </div>

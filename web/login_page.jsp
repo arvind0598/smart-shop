@@ -30,10 +30,18 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <form id="login">
-            <input id="user" type="email" name="useremail" placeholder="Email ID" required/>
-            <input id="pass" type="password" name="password" placeholder="Password" required/>
-            <button> Submit </button>
+        <form id="login" class="container row valign-wrapper">
+            <div class="input-field col s6">
+                <input id="user" type="email" name="useremail" class="validate" required/>
+                <label for="useremail"> Email ID </label>
+            </div>
+            <div class="input-field col s6">
+                <input id="pass" type="password" name="password" class="validate" required/>
+                <label for="password"> Password </label>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+              <i class="material-icons right">send</i>
+            </button>        
         </form>
         <p id="message"></p>
         

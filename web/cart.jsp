@@ -38,7 +38,8 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <table>
+        <div class="container">
+            <table class="striped responsive-table">
             <tr>
                 <th> Image </th>
                 <th> Product Name </th>
@@ -74,18 +75,33 @@
                         ${subCost} 
                     </td>
                     <td>
-                        <button class="add" onclick="updateCart(${product.key},${product.value.qty + 1})"> + </button>
-                        <button class="remove" onclick="updateCart(${product.key},${product.value.qty - 1})"> - </button>
+                        <button class="add waves-effect waves-light btn-small" onclick="updateCart(${product.key},${product.value.qty + 1})"> + </button>
+                        <button class="remove waves-effect waves-light btn-small red darken-3" onclick="updateCart(${product.key},${product.value.qty - 1})"> - </button>
                     </td>
                 </tr>
             </c:forEach>    
         </table>
-        <p><b> Total Effective Cost:</b> <span id="total">${sessionScope.totalCost}</span></p>
         
-        <c:if test="${totalCost ne 0}">
-            <button onclick="checkOut()"> Proceed to Payment </button>
-        </c:if>
-        <p> Note: To change address, visit your profile. </p>
+            <div class="section">
+                <h6><b> Total Effective Cost:</b> <span id="total">${sessionScope.totalCost}</span></h6>
+        
+            <c:if test="${totalCost ne 0}">
+                <button class="waves-effect waves-light btn-large light-blue darken-4" onclick="checkOut()"> 
+                    <i class="material-icons right"> shopping_cart </i>
+                        Proceed to Payment 
+                </button>
+            </c:if>
+
+
+            <div class="row section">
+                <div class="chip">
+                Note: To change address, visit your profile.
+                <i class="close material-icons">close</i>
+              </div>
+            </div>
+            </div>
+
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
