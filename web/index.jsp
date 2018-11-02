@@ -1,4 +1,4 @@
-<%-- 
+<%--
     Document   : index
     Created on : 19 Oct, 2018, 11:59:19 AM
     Author     : de-arth
@@ -9,7 +9,7 @@
 <%@ page import="org.json.simple.JSONObject" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
-<% 
+<%
     JSONObject categories = new Project.Process().getCategories();
     request.setAttribute("categories", categories);
     session.setAttribute("currentpage", "index.jsp");
@@ -22,7 +22,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>  
+        <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
     </head>
     <body>
         <%@ include file="navbar.jspf"%>

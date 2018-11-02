@@ -11,16 +11,17 @@
     Integer item_id = null;
     try {
         item_id = new Integer(request.getParameter("id"));
-        if(item_id < 1) throw new Exception();
-    }
-    catch(Exception e) {
+        if (item_id < 1) {
+            throw new Exception();
+        }
+    } catch (Exception e) {
         response.sendRedirect("index.jsp");
     }
-    
+
     JSONObject product = new Project.Process().getProductDetails(item_id);
     Boolean inCart = false;
-    if(session.getAttribute("login") != null) {
-        inCart = new Project.Process().checkInCart((Integer)session.getAttribute("login"), item_id);
+    if (session.getAttribute("login") != null) {
+        inCart = new Project.Process().checkInCart((Integer) session.getAttribute("login"), item_id);
     }
     request.setAttribute("product", product);
     request.setAttribute("product_id", item_id);
@@ -75,40 +76,40 @@
                 </div>
             </div>
         </div>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
-        
+
         <script>
             let id = <%=item_id%>;
-            
+
             $("#add").on("click", event => {
                 event.preventDefault();
                 event.stopPropagation();
                 $.ajax({
-                    type : "POST",
-                    url : "serve_updatecart",
-                    data : {
-                        "id" : id
+                    type: "POST",
+                    url: "serve_updatecart",
+                    data: {
+                        "id": id
                     },
-                    success : data => {
+                    success: data => {
                         M.toast({
                             html: data.message,
                             displayLength: 2500,
-                            completeCallback: function() {
+                            completeCallback: function () {
                                 window.location.reload(true);
                             }
                         });
                     },
-                    error : err => {
+                    error: err => {
                         console.log(err);
                         M.toast({
-                            html:"There has been a server error. Please try again."
+                            html: "There has been a server error. Please try again."
                         });
-                    } 
+                    }
                 });
             });
-            
+
             $("#check").on("click", event => {
                 window.location = "cart.jsp";
             });

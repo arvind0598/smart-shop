@@ -12,10 +12,11 @@
     String str = null;
     try {
         str = request.getParameter("search");
-        if(str == null) throw new Exception();
+        if (str == null) {
+            throw new Exception();
+        }
         str = str.trim().toLowerCase();
-    }
-    catch(Exception e) {
+    } catch (Exception e) {
         response.sendRedirect("index.jsp");
     }
     JSONObject products = new Project.Process().searchProducts(str);

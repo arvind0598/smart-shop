@@ -12,9 +12,10 @@
     Integer cat_id = null;
     try {
         cat_id = new Integer(request.getParameter("id"));
-        if(cat_id < 1) throw new Exception();
-    }
-    catch(Exception e) {
+        if (cat_id < 1) {
+            throw new Exception();
+        }
+    } catch (Exception e) {
         response.sendRedirect("index.jsp");
     }
     JSONObject products = new Project.Process().getProducts(cat_id);

@@ -12,9 +12,9 @@
     response.setHeader("Pragma", "No-cache");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", -1);
-    
-    Integer x = (Integer)session.getAttribute("login");
-    if(x == null || x < 1) {
+
+    Integer x = (Integer) session.getAttribute("login");
+    if (x == null || x < 1) {
         response.sendRedirect("index.jsp");
         return;
     }
@@ -46,7 +46,7 @@
                 </c:otherwise>
             </c:choose>
         </div>
-        
+
         <h4> Change Password </h4>
         <form id="change_pass" onsubmit="return changePass()">
             <input type="password" id="curr_pass" name="curr_pass" placeholder="Current Password" required/>
@@ -54,58 +54,58 @@
             <input type="password" id="conf_pass" placeholder="Confirm New Password" required/>
             <button> Change Password </button>
         </form>
-        
+
         <h4> Change Address </h4>
         <form id="change_add" onsubmit=" return changeAddress()">
             <textarea id="address" name="address" required></textarea>
             <button> Change Address </button>
         </form>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
-        
+
         <script>
             let passForm = $("#change_pass");
             let addressForm = $("#change_add");
-            
+
             const changePass = () => {
-                if($("#new_pass").val() !== $("#conf_pass").val()) {
-                   alert("Passwords do not match.");
-                   return false;
-               }
+                if ($("#new_pass").val() !== $("#conf_pass").val()) {
+                    alert("Passwords do not match.");
+                    return false;
+                }
                 $.ajax({
                     type: "POST",
                     url: "serve_changepass",
-                    data : passForm.serializeArray(),
+                    data: passForm.serializeArray(),
                     success: data => {
                         alert(data.message);
                     },
-                    error : err => {
+                    error: err => {
                         alert("There has been an error.");
                         console.log(err);
                     }
                 });
-                return false;                
+                return false;
             }
-            
+
             const changeAddress = () => {
                 $.ajax({
                     type: "POST",
                     url: "serve_changeadd",
-                    data : addressForm.serializeArray(),
+                    data: addressForm.serializeArray(),
                     success: data => {
                         alert(data.message);
                         window.location.reload(true);
                     },
-                    error : err => {
+                    error: err => {
                         alert("There has been an error.");
                         console.log(err);
                     }
                 });
-                return false;                
+                return false;
             }
 
         </script>
-        
+
     </body>
 </html>
