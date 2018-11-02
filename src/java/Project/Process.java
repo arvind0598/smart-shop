@@ -317,33 +317,42 @@ public class Process {
         return x;
     }
     
-    Boolean productQuantityViable(int product_id, int qty) {
-        Boolean status = false;
+    int productQuantityViable(int product_id, int qty) {
+        int stock = -1;
+        if(qty < 0) return stock;
+        
         try {
             Connection conn = connectSQL();
             PreparedStatement stmt = conn.prepareStatement("select stock from items where id = ?");
             stmt.setInt(1, product_id);
             ResultSet res = stmt.executeQuery();
             
-            if(res.next() && res.getInt(1) >= qty) status = true;
-            conn.close();
+            if(res.next()) {
+                System.out.print(res.getInt(1));
+                int allowedStock = res.getInt(1);
+                if(allowedStock < qty) stock = allowedStock;
+                else stock = qty;                
+            }
             
+            conn.close();            
         }
         catch (Exception e) {
             Helper.handleError(e);
         }
         
-        return status && (qty >= 0);
+        return stock;
     }
    
     Boolean updateCart(int customer_id, int product_id, int qty) {
-        Boolean status = productQuantityViable(product_id, qty);
-        if(!status) return false;
+        Boolean status = false;
+        int allowedQty = productQuantityViable(product_id, qty);
+        if(allowedQty == -1) return false;
+        
+        System.out.println(allowedQty);
         try {
             Connection conn = connectSQL();
-//            PreparedStatement stmt = conn.prepareStatement("update cart set qty = ? where cust_id = ? and item_id = ?");
             CallableStatement stmt = conn.prepareCall("call update_cart_qty(?, ?, ?)");
-            stmt.setInt(1, qty);
+            stmt.setInt(1, allowedQty);
             stmt.setInt(2, customer_id);
             stmt.setInt(3, product_id);
             stmt.execute();
