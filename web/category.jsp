@@ -28,21 +28,30 @@
         <title>Categories | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="main.css" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>  
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div>
+        <div class="row">
             <c:forEach items="${products}" var="product">
-                <div>
-                    <img src="images/${product.key}.png" style="width:100px"/>
-                    <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
-                    <p>
-                        <c:if test="${product.value.offer ne 0}">
-                            <s> ${product.value.cost} </s>
-                        </c:if>
-                        <c:out value="${product.value.cost - product.value.offer}"/>
-                    </p>      
+                <div class="col s12 m7 l3">
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="images/${product.key}.png" class="responsive-img">
+                        </div>
+                        <div class="card-content">
+                            <p> Rs.
+                                <c:if test="${product.value.offer ne 0}">
+                                    <s> ${product.value.cost} </s>
+                                </c:if>
+                                <c:out value="${product.value.cost - product.value.offer}"/>
+                            </p>
+                        </div>
+                        <div class="card-action">
+                            <a href="product.jsp?id=${product.key}"> ${product.value.name} </a>
+                        </div>
+                    </div>      
                 </div>
             </c:forEach>
         </div>

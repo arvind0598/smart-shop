@@ -34,33 +34,50 @@
         <title><%=product.get("name")%> | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="main.css" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>  
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div>
-            <img src="images/${product_id}.png"/>
-            <p>
-                <c:if test="${product.offer ne 0}">
-                    <s> ${product.cost} </s>
-                </c:if>
-                <c:out value="${product.cost - product.offer}"/>
-            </p> 
-            <p> ${product.details} </p>
+        <div class="container">
+            <div class="row">
+                <div class="col l6">
+                    <img class="responsive-img" src="images/${product_id}.png"/>
+                </div>
+                <div class="col l6">
+                    <div class="card small">
+                        <div class="card-content">
+                            <span class="card-title"> ${product.name} </span>
+                            <p> Rs.
+                                <c:if test="${product.offer ne 0}">
+                                    <s> ${product.cost} </s>
+                                </c:if>
+                                <c:out value="${product.cost - product.offer}"/>
+                            </p> 
+                            <p> ${product.details} </p> 
+                        </div>
+                        <div class="card-action">
+                            <c:if test="${sessionScope.login ne null}">
+                                <c:choose>
+                                    <c:when test="${in_cart eq false}">
+                                        <button id="add" class="waves-effect waves-light btn-large light-blue darken-3"> Add To Cart </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button id="check" class="waves-effect waves-light btn-large light-blue darken-3"> View Cart </button>
+                                    </c:otherwise>
+                                </c:choose>            
+                            </c:if>
+                            <c:if test="${sessionScope.login eq null}">
+                                <p> Login to add items to your cart </p>
+                            </c:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <c:if test="${sessionScope.login ne null}">
-            <c:choose>
-                <c:when test="${in_cart eq false}">
-                    <button id="add"> Add To Cart </button>
-                </c:when>
-                <c:otherwise>
-                    <button id="check"> View Cart </button>
-                </c:otherwise>
-            </c:choose>            
-        </c:if>
-        <p id="message"></p>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">          
-        </script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/materialize.min.js"></script>
         
         <script>
             let id = <%=item_id%>;
@@ -75,13 +92,19 @@
                         "id" : id
                     },
                     success : data => {
-                        console.log(data);
-                        alert(data.message);
-                        window.location.reload(true);
+                        M.toast({
+                            html: data.message,
+                            displayLength: 2500,
+                            completeCallback: function() {
+                                window.location.reload(true);
+                            }
+                        });
                     },
                     error : err => {
                         console.log(err);
-                        message.text("There has been a server error. Please try again.");
+                        M.toast({
+                            html:"There has been a server error. Please try again."
+                        });
                     } 
                 });
             });
