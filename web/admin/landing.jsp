@@ -4,47 +4,25 @@
     Author     : de-arth
 --%>
 
-<%@ page contentType="text/html" pageEncoding="UTF-8" %>
-<%@ page import="org.json.simple.JSONObject" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
-
-<%
-    response.setHeader("Pragma", "No-cache");
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setDateHeader("Expires", -1);
-    
-    Integer x = (Integer)session.getAttribute("admlogin");
-    if(x == null || x < 1) {
-        response.sendRedirect("index.jsp");
-        return;
-    }
-    
-    JSONObject categories = new Project.Process().getCategories();
-    request.setAttribute("categories", categories);
-%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Admin Home | S Mart</title>
+   <head>
+        <title>Admin Portal | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>  
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <h1>Categories</h1>
-        <div>
-            <c:forEach items="${categories}" var="cat">
-                <div>
-                    <a href="category.jsp?id=${cat.key}"> ${cat.value} </a>
-                    <button data-catid="${cat.key}"> Remove Category </button>
-                </div>
-            </c:forEach>
+        <div class="container">
+            <div class="collection">
+            <a href="modify.jsp" class="collection-item">Modify Products</a>
+            <a href="#" class="collection-item">View Active Orders</a>
+          </div>
         </div>
-        <h4> Add Category </h4>
-        <form id="addcat">
-            <input type="text" name="cat" required>
-            <input type="submit" value="Add Category">
-        </form>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="../js/materialize.min.js"></script>
     </body>
 </html>

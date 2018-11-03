@@ -1,6 +1,8 @@
 delimiter $$
 
 drop procedure if exists update_cart_qty$$
+drop procedure if exists add_category$$
+drop procedure if exists rmv_category$$
 drop procedure if exists make_order_from_cart$$
 
 create procedure update_cart_qty(in a int, in b int, in c int)
@@ -16,6 +18,25 @@ begin
 		insert into cust_logs(cust_id, action, details) values(b, 'RMV_FROM_CART', c);
 		delete from cart where cust_id = b and item_id = c;
 	end if;
+end$$
+
+create procedure add_category(out status_x int, in cat_x varchar(30), in adm_x int)
+begin
+	set status_x = 0;
+	insert into categories(name) values(cat_x);
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'ADD_CATEGORY', cat_x);
+	set status_x = 1;
+end$$
+
+create procedure rmv_category(out status_x int, in cat_x int, in adm_x int)
+begin
+	declare cat_name varchar(30);
+
+	set status_x = 0;
+	select name into cat_name from categories where id = cat_x;
+	delete from categories where id = cat_x;
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'RMV_CATEGORY', cat_name);
+	set status_x = 1;
 end$$
 
 create procedure make_order_from_cart(out order_x int, in cust_x int, in used_points int)

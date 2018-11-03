@@ -22,7 +22,7 @@ public class Process {
     }
     
     enum CustLogs {
-        CHECKOUT,
+//        CHECKOUT,
         FEEDBACK;
     }
     
@@ -503,7 +503,43 @@ public class Process {
         return status;
     }
     
+    Boolean addCategory(String category, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call add_category(?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setString(2, category);
+            stmt.setInt(3, admin_id);
+            stmt.execute();            
+            status = stmt.getInt(1) == 1;
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
     
+    Boolean removeCategory(int cat_id, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call rmv_category(?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, cat_id);
+            stmt.setInt(3, admin_id);
+            stmt.execute();           
+            status = stmt.getInt(1) == 1;
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
 }
 
 class Helper {
