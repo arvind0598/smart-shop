@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -62,9 +61,8 @@ public class RemoveCategory extends HttpServlet {
         String temp_cat_id = request.getParameter("category");
         String temp_admin_id = sess.getAttribute("admlogin") == null ? "" : sess.getAttribute("admlogin").toString();
         
-        Pattern numbers_only = Pattern.compile("^[0-9]+$");
-        Boolean admin_id_valid = numbers_only.matcher(temp_admin_id).matches();
-        Boolean cat_id_valid = numbers_only.matcher(temp_cat_id).matches();
+        Boolean admin_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_admin_id);
+        Boolean cat_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cat_id);
         
         if(!admin_id_valid) { 
             try (PrintWriter out = response.getWriter()) {   

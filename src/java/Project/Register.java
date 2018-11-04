@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -61,12 +60,11 @@ public class Register extends HttpServlet {
         String username = request.getParameter("name");
         String password = request.getParameter("password");
         
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        Boolean useremail_correct = Helper.regexChecker(Helper.Regex.EMAIL, useremail);
         
-        // add password and name validation here
+        // add password validation here
         Boolean password_correct = true;
-        Boolean username_correct = true;
+        Boolean username_correct = Helper.regexChecker(Helper.Regex.MIN_SIX_ALPHA_SPACES, username);
         
         if(!useremail_correct || !password_correct || !username_correct) {
             try (PrintWriter out = response.getWriter()) {

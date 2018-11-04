@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -60,8 +59,7 @@ public class AdminLogin extends HttpServlet {
         String useremail = request.getParameter("useremail");
         String password = request.getParameter("password");
         
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        Boolean useremail_correct = Helper.regexChecker(Helper.Regex.EMAIL, useremail);
         
         // add password validation here
         Boolean password_correct = true;

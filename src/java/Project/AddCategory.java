@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -62,11 +61,8 @@ public class AddCategory extends HttpServlet {
         String category = request.getParameter("category");
         String temp_admin_id = sess.getAttribute("admlogin") == null ? "" : sess.getAttribute("admlogin").toString();
         
-        Pattern numbers_only = Pattern.compile("^[0-9]+$");
-        Boolean admin_id_valid = numbers_only.matcher(temp_admin_id).matches();
-        
-        Pattern category_pattern = Pattern.compile("^[a-zA-Z]{4,}$");
-        Boolean category_correct = category_pattern.matcher(category).matches();
+        Boolean admin_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_admin_id);
+        Boolean category_correct = Helper.regexChecker(Helper.Regex.MIN_FOUR_ALPHA_ONLY, category);
         
         if(!admin_id_valid) { 
             try (PrintWriter out = response.getWriter()) {   

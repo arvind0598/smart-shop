@@ -14,4 +14,9 @@
             30
         </session-timeout>
     </session-config>
+    <context-param>
+        <description> Location to store uploaded images </description>
+        <param-name>file-upload</param-name>
+        <param-value> /home/de-arth/Desktop/projects/smart-shop/web/images </param-value>
+    </context-param>
 </web-app>

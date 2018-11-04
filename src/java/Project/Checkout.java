@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -62,8 +61,7 @@ public class Checkout extends HttpServlet {
         String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
         String temp_point_status = request.getParameter("points");
         
-        Pattern numbers_only = Pattern.compile("^[0-9]+$");
-        Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
+        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean point_status = Boolean.valueOf(temp_point_status);
         
         int order_id = -1;

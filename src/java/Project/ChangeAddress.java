@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -72,7 +71,7 @@ public class ChangeAddress extends HttpServlet {
             return;
         } 
         
-        // add password validation here
+        // add validation here
         Boolean address_correct = true;
         
         if(!address_correct) {

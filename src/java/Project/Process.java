@@ -6,6 +6,7 @@
 package Project;
 
 import java.sql.*;
+import java.util.regex.Pattern;
 import org.json.simple.*;
 
 /**
@@ -224,6 +225,28 @@ public class Process {
             
             while(res.next()) {
                 x.put(res.getInt(1), res.getString(2));
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    public String getCategoryName(int cat_id) {
+        String x = new String();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select name from categories where id = ?");
+            stmt.setInt(1, cat_id);
+            ResultSet res = stmt.executeQuery();
+            
+            if(res.next()) {
+                x = res.getString(1);
             }
             
             conn.close();
@@ -540,9 +563,57 @@ public class Process {
         
         return status;
     }
+    
+    int addProduct(int cat_id, JSONObject product, int admin_id) {
+        int status = -1;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call add_item(?,?,?,?,?,?,?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+//            System.out.println(product.get("cat_id"));
+            stmt.setInt(2, cat_id);
+            stmt.setString(3, product.get("name").toString());
+            System.out.println(product.get("stock"));
+            stmt.setString(4, product.get("desc").toString());
+            stmt.setInt(5, (int)product.get("cost"));
+            stmt.setString(6, product.get("keywords").toString());
+            stmt.setInt(7, (int)product.get("stock"));
+            stmt.setInt(8, (int)product.get("offer"));
+            stmt.setInt(9, admin_id);
+            
+            stmt.execute();           
+            status = stmt.getInt(1);
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
 }
 
 class Helper {
+    
+    enum Regex {
+        NUMBERS_ONLY("^[0-9]+$"),
+        MIN_FOUR_ALPHA_ONLY("^[a-zA-Z]{4,}$"),
+        EMAIL("^[^@]+@[^@]+\\.[^@]+$"),
+        MIN_SIX_ALPHANUM("^[a-zA-Z0-9]{6,}$"),
+        MIN_SIX_ALPHA_SPACES("^[a-zA-Z ]{6,}$"),
+        MIN_SIX_ALPHANUM_SPACES("^[a-zA-Z0-9 ]{6,}$"),
+        MIN_SIX_LOWERCASE_SPACES("^[a-z ]{6,}$");
+        
+        private final String str;
+        
+        public String getRegex() {
+            return this.str;
+        }
+        
+        Regex(String str) {
+            this.str = str;
+        }             
+    }
     
     public static void handleError(Exception e) {
         try {
@@ -554,5 +625,18 @@ class Helper {
     
     public static String hashPassword(String pass) {
         return pass;
+    }
+    
+    public static Boolean regexChecker(Regex r, String str) {
+        Boolean status = false;
+        try {
+            Pattern p = Pattern.compile(r.getRegex());
+            status = p.matcher(str).matches();
+        }
+        catch (Exception e) {
+            status = false;
+        }
+        
+        return status;        
     }
 }

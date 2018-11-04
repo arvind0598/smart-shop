@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -65,10 +64,9 @@ public class UpdateCart extends HttpServlet {
         
         if(temp_qty == null) temp_qty = "1";
         
-        Pattern numbers_only = Pattern.compile("^[0-9]+$");
-        Boolean cust_id_valid = numbers_only.matcher(temp_cust_id).matches();
-        Boolean item_id_valid = numbers_only.matcher(temp_item_id).matches();
-        Boolean qty_valid = numbers_only.matcher(temp_qty).matches();
+        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
+        Boolean item_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_item_id);
+        Boolean qty_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_qty);
 
         if(!cust_id_valid) {
             obj.put("status", -1);

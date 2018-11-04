@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
-import java.util.regex.*;
 
 
 /**
@@ -61,8 +60,7 @@ public class Login extends HttpServlet {
         String useremail = request.getParameter("useremail");
         String password = request.getParameter("password");
         
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        Boolean useremail_correct = Helper.regexChecker(Helper.Regex.EMAIL, useremail);
         
         // add password validation here
         Boolean password_correct = true;

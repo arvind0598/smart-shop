@@ -4,8 +4,13 @@ drop procedure if exists update_cart_qty$$
 drop procedure if exists add_category$$
 drop procedure if exists rmv_category$$
 drop procedure if exists make_order_from_cart$$
+drop procedure if exists add_item$$
+drop procedure if exists update_item$$
+drop procedure if exists rmv_item$$
+drop procedure if exists add_offer$$
 
-create procedure update_cart_qty(in a int, in b int, in c int)
+create procedure update_cart_qty
+	(in a int, in b int, in c int)
 begin
 	if a <> 0 then
 		if exists(select qty from cart where cust_id = b and item_id = c) then
@@ -20,7 +25,8 @@ begin
 	end if;
 end$$
 
-create procedure add_category(out status_x int, in cat_x varchar(30), in adm_x int)
+create procedure add_category
+	(out status_x int, in cat_x varchar(30), in adm_x int)
 begin
 	set status_x = 0;
 	insert into categories(name) values(cat_x);
@@ -28,7 +34,8 @@ begin
 	set status_x = 1;
 end$$
 
-create procedure rmv_category(out status_x int, in cat_x int, in adm_x int)
+create procedure rmv_category
+	(out status_x int, in cat_x int, in adm_x int)
 begin
 	declare cat_name varchar(30);
 
@@ -39,7 +46,49 @@ begin
 	set status_x = 1;
 end$$
 
-create procedure make_order_from_cart(out order_x int, in cust_x int, in used_points int)
+create procedure add_offer
+	(out status_x int, in item_x int, in offer_x int, in adm_x int)
+begin
+
+	declare item_name varchar(30);
+
+	set status_x = 0;
+	select name into item_name from items where id = item_x;
+
+	update items set offer = offer_x where id = item_x;
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'ADD_OFFER', concat(item_name,' ', offer_x));
+
+	set status_x = 1;
+end$$
+
+create procedure add_item
+	(out status_x int, in cat_x int, in name_x varchar(30), in details_x varchar(30), in cost_x int, in keywords_x varchar(200), in stock_x int, in offer_x int, in adm_x int)
+begin
+	
+	declare offer_status_x int default 0;
+	declare item_x int;
+
+	set status_x = 0;
+
+	insert into items(cat_id, name, details, cost, keywords, stock) values(cat_x, name_x, details_x, cost_x, keywords_x, stock_x);
+	select last_insert_id() into item_x;
+
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'ADD_ITEM', name_x);	
+
+	if offer_x is not null then
+		call add_offer(offer_status_x, item_x, offer_x, adm_x);
+	end if;
+
+	set status_x = item_x;
+end$$
+
+-- create procedure update_item
+-- 	(out status_x int, in catname_x varchar(30), in name_x varchar(30), in details_x varchar(30), in cost_x int, in keywords_x varchar(200), in stock_x int, in offer_x int, in adm_x int)
+-- begin
+-- end$$
+	
+create procedure make_order_from_cart
+	(out order_x int, in cust_x int, in used_points int)
 begin
 	
 	declare done int default 0;

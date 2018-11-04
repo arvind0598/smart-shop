@@ -7,7 +7,6 @@ package Project;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -63,8 +62,7 @@ public class ChangePassword extends HttpServlet {
         String currPassword = request.getParameter("curr_pass");
         String newPassword = request.getParameter("new_pass");
         
-        Pattern useremail_pattern = Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-        Boolean useremail_correct = useremail_pattern.matcher(useremail).matches();
+        Boolean useremail_correct = Helper.regexChecker(Helper.Regex.EMAIL, useremail);
         
         // add password validation here
         Boolean curr_password_correct = true;
