@@ -87,10 +87,12 @@ public class ModifyProduct extends HttpServlet {
         if(!admin_ok) {
             obj.put("status", -1);
             obj.put("message", "Login to continue.");
+            return;
         }
         else if(!stock_ok || !offer_ok || !cost_ok || !admin_ok || !product_name_ok || !desc_ok || !keywords_ok || !options_ok) {
             obj.put("status", -1);
             obj.put("message", "Invalid Request");
+            return;
         }
         else {
             

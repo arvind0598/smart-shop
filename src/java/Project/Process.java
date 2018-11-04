@@ -591,6 +591,73 @@ public class Process {
         
         return status;
     }
+    
+    public JSONObject getProductsForAdmin(int category_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select id, name, cost, offer, stock from items where cat_id = ?");
+            stmt.setInt(1, category_id);
+            ResultSet res = stmt.executeQuery();
+            
+            while(res.next()) {
+                JSONObject item = new JSONObject();
+                item.put("name", res.getString(2));
+                item.put("cost", res.getInt(3));
+                item.put("offer", res.getInt(4));
+                item.put("stock", res.getInt(5));
+                x.put(res.getInt(1), item);
+            }
+            
+            conn.close();
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return x;
+    }
+    
+    Boolean updateOffer(int product_id, int offer, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call add_offer(?,?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, product_id);
+            stmt.setInt(3, offer);
+            stmt.setInt(4, admin_id);
+            stmt.execute();            
+            status = stmt.getInt(1) == 1;
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    Boolean updateStock(int product_id, int stock, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call add_stock(?,?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, product_id);
+            stmt.setInt(3, stock);
+            stmt.setInt(4, admin_id);
+            stmt.execute();            
+            status = stmt.getInt(1) == 1;
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
 }
 
 class Helper {
@@ -632,6 +699,7 @@ class Helper {
         try {
             Pattern p = Pattern.compile(r.getRegex());
             status = p.matcher(str).matches();
+            System.out.println(status);
         }
         catch (Exception e) {
             status = false;

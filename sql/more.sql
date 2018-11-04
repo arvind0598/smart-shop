@@ -8,6 +8,7 @@ drop procedure if exists add_item$$
 drop procedure if exists update_item$$
 drop procedure if exists rmv_item$$
 drop procedure if exists add_offer$$
+drop procedure if exists add_stock$$
 
 create procedure update_cart_qty
 	(in a int, in b int, in c int)
@@ -57,6 +58,21 @@ begin
 
 	update items set offer = offer_x where id = item_x;
 	insert into admin_logs(admin_id, action, details) values(adm_x, 'ADD_OFFER', concat(item_name,' ', offer_x));
+
+	set status_x = 1;
+end$$
+
+create procedure add_stock
+	(out status_x int, in item_x int, in stock_x int, in adm_x int)
+begin
+
+	declare item_name varchar(30);
+
+	set status_x = 0;
+	select name into item_name from items where id = item_x;
+
+	update items set stock = stock_x where id = item_x;
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'MODIFY_STOCK', concat(item_name,' ', stock_x));
 
 	set status_x = 1;
 end$$

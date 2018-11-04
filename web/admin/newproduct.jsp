@@ -10,14 +10,29 @@
 
 <%
     Integer cat_id = null;
+    Integer item_id = null;
+    
+    Boolean editing = false;
     try {
-        cat_id = new Integer(request.getParameter("cat_id"));
-        if (cat_id == null || cat_id < 1) {
+        item_id = new Integer(request.getParameter("item_id"));
+        if (item_id == null || item_id < 1) {
             throw new Exception();
         }
-    } catch (Exception e) {
-        response.sendRedirect("landing.jsp");
-        return;
+        editing = true;  
+    } 
+    
+    catch (Exception e) {
+        try {
+            cat_id = new Integer(request.getParameter("cat_id"));
+            if (cat_id == null || cat_id < 1) {
+                throw new Exception();
+            }
+            editing = false;
+        }
+        catch (Exception e1) {
+            response.sendRedirect("landing.jsp");
+            return;
+        }
     }
 
     String categoryName = new Project.Process().getCategoryName(cat_id);
@@ -130,7 +145,7 @@
 //                        if (data.status === 1)
 //                            window.location.href = "index.jsp";
                         M.toast({
-                            html: "aahaa"
+                            html: data.message
                         });
                     },
                     error: err => {

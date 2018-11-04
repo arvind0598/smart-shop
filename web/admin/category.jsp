@@ -19,7 +19,7 @@
         response.sendRedirect("landing.jsp");
         return;
     }
-    JSONObject products = new Project.Process().getProducts(cat_id);
+    JSONObject products = new Project.Process().getProductsForAdmin(cat_id);
     request.setAttribute("products", products);
     
     String categoryName = new Project.Process().getCategoryName(cat_id);
@@ -54,8 +54,11 @@
                     <tr> 
                         <th> Image </th>
                         <th> Name </th>
+                        <th> Cost </th>
                         <th> Offer </th>
-                        <th> Modify Offer </th>
+                        <!--<th> Modify Offer </th>-->
+                        <th> Stock </th>
+                        <!--<th> Modify Stock </th>-->
                         <!--<th> Remove Offer </th>-->
                         <th> Remove Item </th>
                     </tr>
@@ -64,36 +67,27 @@
                 <c:forEach items="${products}" var="product">
                     <tr id="product${product.key}}">                
                         <td><img src="../images/${product.key}.png" style="height:40px"></td>
-                        <td><a href="product.jsp?id=${product.key}"> ${product.value.name} </a></td>
+                        <td><p> ${product.value.name} </p></td>
+                        <td><p> ${product.value.cost} </p></td> 
                         <td>
-                            <c:choose>
-                                <c:when test="${product.value.offer ne 0}">
-                                    <p> Rs.${product.value.offer} </p>
-                                </c:when>
-                                <c:otherwise>
-                                    <p> No Offer </p>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>
-                            <form id="addcat" class="container" onsubmit="return addOffer()">
+                            <form class="container addoffer">
                                 <div class="input-field inline">
-                                    <input type="text" name="offer" id="cat" class="validate" required>
-                                    <!--<label for="cat"> Category Name </label>-->
+                                    <input type="text" name="offer" class="validate" value="${product.value.offer}" required data-id="${product.key}">
                                 </div>
                             </form>
                         </td>
-<!--                        <td>
-                            <button class="btn waves-effect waves-light" type="submit" name="action">Add Category
-                                <i class="material-icons right">library_add</i>
-                            </button>
-                        </td>-->
+                        <td>
+                            <form class="container addstock">
+                                <div class="input-field inline">
+                                    <input type="text" name="stock" class="validate" value="${product.value.stock}" required data-id="${product.key}">
+                                </div>
+                            </form>
+                        </td>
                         <td>
                             <button class="btn-floating btn-large waves-effect waves-light red">
                                 <i class="material-icons right">delete</i>
                             </button>
                         </td>
-                        <!--<td></td>-->
                     </tr>
 
                 </c:forEach>
@@ -113,7 +107,47 @@
         <script type="text/javascript" src="../js/materialize.min.js"></script>
         
         <script>
-             M.updateTextFields();
+            const stocks = $(".addstock");
+            const offers = $(".addoffer");
+            
+            const submitUpdate = (type, value, id) => {
+                $.ajax({
+                    type: "POST",
+                    url: "../serve_modstockoffer",
+                    data: {
+                      type: type,
+                      value: value,
+                      id: id
+                    },
+                    success: data => {
+                        console.log(data);
+                        M.toast({
+                            html: data.message
+                        });
+                    },
+                    error: err => {
+                        M.toast({
+                            html: "There has been a server error. Please try again."
+                        });
+                        console.log(err);
+                    }
+                });
+            }
+            
+            stocks.on("submit", event => {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log(event.currentTarget[0].dataset.id);
+                submitUpdate(0, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
+                return false;
+            });
+            
+            offers.on("submit", event => {
+                event.preventDefault();
+                event.stopPropagation();
+                submitUpdate(1, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
+                return false;
+            });
         </script>
             
     </body> 
