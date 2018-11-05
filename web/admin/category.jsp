@@ -21,7 +21,7 @@
     }
     JSONObject products = new Project.Process().getProductsForAdmin(cat_id);
     request.setAttribute("products", products);
-    
+
     String categoryName = new Project.Process().getCategoryName(cat_id);
     request.setAttribute("name", categoryName);
 %>
@@ -33,7 +33,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-         <link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
+        <link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
         <style>
             body {
                 display: flex;
@@ -56,45 +56,42 @@
                         <th> Name </th>
                         <th> Cost </th>
                         <th> Offer </th>
-                        <!--<th> Modify Offer </th>-->
                         <th> Stock </th>
-                        <!--<th> Modify Stock </th>-->
-                        <!--<th> Remove Offer </th>-->
                         <th> Remove Item </th>
                     </tr>
                 </thead>
                 <tbody>
-                <c:forEach items="${products}" var="product">
-                    <tr id="product${product.key}}">                
-                        <td><img src="../images/${product.key}.png" style="height:40px"></td>
-                        <td><p> ${product.value.name} </p></td>
-                        <td><p> ${product.value.cost} </p></td> 
-                        <td>
-                            <form class="container addoffer">
-                                <div class="input-field inline">
-                                    <input type="text" name="offer" class="validate" value="${product.value.offer}" required data-id="${product.key}">
-                                </div>
-                            </form>
-                        </td>
-                        <td>
-                            <form class="container addstock">
-                                <div class="input-field inline">
-                                    <input type="text" name="stock" class="validate" value="${product.value.stock}" required data-id="${product.key}">
-                                </div>
-                            </form>
-                        </td>
-                        <td>
-                            <button class="btn-floating btn-large waves-effect waves-light red">
-                                <i class="material-icons right">delete</i>
-                            </button>
-                        </td>
-                    </tr>
+                    <c:forEach items="${products}" var="product">
+                        <tr id="product${product.key}}">                
+                            <td><img src="../images/${product.key}.png" style="height:40px"></td>
+                            <td><p> ${product.value.name} </p></td>
+                            <td><p> ${product.value.cost} </p></td> 
+                            <td>
+                                <form class="container addoffer">
+                                    <div class="input-field inline">
+                                        <input type="text" name="offer" class="validate" value="${product.value.offer}" required data-id="${product.key}">
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <form class="container addstock">
+                                    <div class="input-field inline">
+                                        <input type="text" name="stock" class="validate" value="${product.value.stock}" required data-id="${product.key}">
+                                    </div>
+                                </form>
+                            </td>
+                            <td>
+                                <button class="btn-floating btn-large waves-effect waves-light red" onclick="deleteProduct(${product.key})">
+                                    <i class="material-icons right">delete</i>
+                                </button>
+                            </td>
+                        </tr>
 
-                </c:forEach>
+                    </c:forEach>
                 </tbody>
             </table>
         </main>
-        
+
         <footer class="page-footer grey lighten-5">
             <div class="container">
                 <div class="row center-align">
@@ -102,22 +99,22 @@
                 </div>
             </div>
         </footer>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="../js/materialize.min.js"></script>
-        
+
         <script>
             const stocks = $(".addstock");
             const offers = $(".addoffer");
-            
+
             const submitUpdate = (type, value, id) => {
                 $.ajax({
                     type: "POST",
                     url: "../serve_modstockoffer",
                     data: {
-                      type: type,
-                      value: value,
-                      id: id
+                        type: type,
+                        value: value,
+                        id: id
                     },
                     success: data => {
                         console.log(data);
@@ -134,6 +131,29 @@
                 });
             }
             
+            const deleteProduct = id => {
+                $.ajax({
+                    type: "POST",
+                    url: "../serve_rmvitem",
+                    data: {
+                        id: id
+                    },
+                    success: data => {
+                        console.log(data);
+                        M.toast({
+                            html: data.message,
+                            completeCallback: window.location.reload(true)
+                        });
+                    },
+                    error: err => {
+                        M.toast({
+                            html: "There has been a server error. Please try again."
+                        });
+                        console.log(err);
+                    }
+                });
+            }
+
             stocks.on("submit", event => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -141,7 +161,7 @@
                 submitUpdate(0, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
                 return false;
             });
-            
+
             offers.on("submit", event => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -149,6 +169,6 @@
                 return false;
             });
         </script>
-            
+
     </body> 
 </html>

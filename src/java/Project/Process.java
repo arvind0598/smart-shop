@@ -23,18 +23,10 @@ public class Process {
     }
     
     enum CustLogs {
-//        CHECKOUT,
         FEEDBACK;
     }
     
     enum AdminLogs {
-        ADD_CATEGORY,
-        RMV_CATEGORY,
-        ADD_ITEM,
-        RMV_ITEM,
-        MODIFY_STOCK,
-        ADD_OFFER,
-        RMV_OFFER,
         CHANGE_DEL_STATUS;
     }
     
@@ -583,6 +575,25 @@ public class Process {
             
             stmt.execute();           
             status = stmt.getInt(1);
+        }
+        
+        catch (Exception e) {
+            Helper.handleError(e);
+        }
+        
+        return status;
+    }
+    
+    Boolean removeProduct(int product_id, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call rmv_item(?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, product_id);
+            stmt.setInt(3, admin_id);
+            stmt.execute();           
+            status = stmt.getInt(1) == 1;
         }
         
         catch (Exception e) {

@@ -9,6 +9,16 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <%
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setDateHeader("Expires", -1);
+
+    Integer x = (Integer) session.getAttribute("admlogin");
+    if (x == null || x < 1) {
+        response.sendRedirect("index.jsp");
+        return;
+    }    
+    
     Integer cat_id = null;
     Integer item_id = null;
     
@@ -145,7 +155,8 @@
 //                        if (data.status === 1)
 //                            window.location.href = "index.jsp";
                         M.toast({
-                            html: data.message
+                            html: data.message,
+                            completeCallback: window.location.href = "category.jsp?id=${cat_id}"
                         });
                     },
                     error: err => {

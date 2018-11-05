@@ -4,6 +4,18 @@
     Author     : de-arth
 --%>
 
+<%
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setDateHeader("Expires", -1);
+
+    Integer x = (Integer) session.getAttribute("admlogin");
+    if (x == null || x < 1) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

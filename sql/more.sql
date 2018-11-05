@@ -5,7 +5,6 @@ drop procedure if exists add_category$$
 drop procedure if exists rmv_category$$
 drop procedure if exists make_order_from_cart$$
 drop procedure if exists add_item$$
-drop procedure if exists update_item$$
 drop procedure if exists rmv_item$$
 drop procedure if exists add_offer$$
 drop procedure if exists add_stock$$
@@ -57,7 +56,7 @@ begin
 	select name into item_name from items where id = item_x;
 
 	update items set offer = offer_x where id = item_x;
-	insert into admin_logs(admin_id, action, details) values(adm_x, 'ADD_OFFER', concat(item_name,' ', offer_x));
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'MODIFY_OFFER', concat(item_name,' ', offer_x));
 
 	set status_x = 1;
 end$$
@@ -98,11 +97,21 @@ begin
 	set status_x = item_x;
 end$$
 
--- create procedure update_item
--- 	(out status_x int, in catname_x varchar(30), in name_x varchar(30), in details_x varchar(30), in cost_x int, in keywords_x varchar(200), in stock_x int, in offer_x int, in adm_x int)
--- begin
--- end$$
+create procedure rmv_item
+	(out status_x int, in item_x int, in adm_x int)
+begin
+
+	declare name_x varchar(30);
 	
+	set status_x = 0;
+
+	select name into name_x from items where id = item_x;
+	delete from items where id = item_x;
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'RMV_ITEM', name_x);
+
+	set status_x = 1;
+end$$
+
 create procedure make_order_from_cart
 	(out order_x int, in cust_x int, in used_points int)
 begin
