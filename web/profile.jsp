@@ -34,7 +34,7 @@
     <body>
         <%@ include file="navbar.jspf"%>
         <div>
-            <p> Name: ${details.name} </p>
+            <h4> ${details.name} </h4>
             <p> Email: ${details.email} </p>
             <p> Points: ${details.points} </p>
             <c:choose>
@@ -47,18 +47,39 @@
             </c:choose>
         </div>
 
-        <h4> Change Password </h4>
         <form id="change_pass" onsubmit="return changePass()">
-            <input type="password" id="curr_pass" name="curr_pass" placeholder="Current Password" required/>
-            <input type="password" id="new_pass" name="new_pass" placeholder="New Password" required/>
-            <input type="password" id="conf_pass" placeholder="Confirm New Password" required/>
-            <button> Change Password </button>
+	  <div class="row">
+       	   <h5> Change Password </h5>
+	   <div class="col s12">Current Password:
+	    <div class="input-field inline">
+            <input type="password" id="curr_pass" name="curr_pass" placeholder="Current Password" class="validate" required/>
+	    </div>
+           </div>
+          </div>
+	  <div class="row">
+	   <div class="col s20">New Password:  
+	    <div class="input-field inline">
+            <input type="password" id="new_pass" name="new_pass" placeholder="New Password" class="validate" required/>
+	    </div>
+           </div>
+          </div>
+	  <div class="row">
+	   <div class="col s12">Confirm Password:
+	    <div class="input-field inline">
+            <input type="password" id="conf_pass" placeholder="Confirm New Password" class="validate" required/>
+	    </div>
+           </div>
+          </div>
+            <button class="waves-effect waves-light btn-small">Change Password</button>
         </form>
-
-        <h4> Change Address </h4>
+	<div class="row"></row>
         <form id="change_add" onsubmit=" return changeAddress()">
+	<div class="row">
+	 <div class="col m9">
+        <h5> Change Address </h5>
             <textarea id="address" name="address" required></textarea>
-            <button> Change Address </button>
+	</div></div>
+            <button class="waves-effect waves-light btn-small">Change Address</button>
         </form>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
