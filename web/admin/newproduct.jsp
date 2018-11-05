@@ -17,29 +17,26 @@
     if (x == null || x < 1) {
         response.sendRedirect("index.jsp");
         return;
-    }    
-    
+    }
+
     Integer cat_id = null;
     Integer item_id = null;
-    
+
     Boolean editing = false;
     try {
         item_id = new Integer(request.getParameter("item_id"));
         if (item_id == null || item_id < 1) {
             throw new Exception();
         }
-        editing = true;  
-    } 
-    
-    catch (Exception e) {
+        editing = true;
+    } catch (Exception e) {
         try {
             cat_id = new Integer(request.getParameter("cat_id"));
             if (cat_id == null || cat_id < 1) {
                 throw new Exception();
             }
             editing = false;
-        }
-        catch (Exception e1) {
+        } catch (Exception e1) {
             response.sendRedirect("landing.jsp");
             return;
         }
@@ -118,7 +115,7 @@
                         <div class="file-field input-field">
                             <div class="btn">
                                 <span>Product Image</span>
-                                <input type="file">
+                                <input type="file" name="image" accept="image/png" required>
                             </div>
                             <div class="file-path-wrapper">
                                 <input class="file-path validate" type="text">
@@ -146,10 +143,17 @@
             form.on("submit", event => {
                 event.preventDefault();
                 event.stopPropagation();
+
+                let formData = new FormData($("#addproduct")[0]);
+                for (var [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
                 $.ajax({
                     type: "POST",
                     url: "../serve_modproduct",
-                    data: form.serializeArray(),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
                     success: data => {
                         console.log(data);
 //                        if (data.status === 1)

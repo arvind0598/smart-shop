@@ -565,7 +565,7 @@ public class Process {
 //            System.out.println(product.get("cat_id"));
             stmt.setInt(2, cat_id);
             stmt.setString(3, product.get("name").toString());
-            System.out.println(product.get("stock"));
+//            System.out.println(product.get("stock"));
             stmt.setString(4, product.get("desc").toString());
             stmt.setInt(5, (int)product.get("cost"));
             stmt.setString(6, product.get("keywords").toString());
@@ -579,6 +579,7 @@ public class Process {
         
         catch (Exception e) {
             Helper.handleError(e);
+            status = -1;
         }
         
         return status;
@@ -680,7 +681,8 @@ class Helper {
         MIN_SIX_ALPHANUM("^[a-zA-Z0-9]{6,}$"),
         MIN_SIX_ALPHA_SPACES("^[a-zA-Z ]{6,}$"),
         MIN_SIX_ALPHANUM_SPACES("^[a-zA-Z0-9 ]{6,}$"),
-        MIN_SIX_LOWERCASE_SPACES("^[a-z ]{6,}$");
+        MIN_SIX_LOWERCASE_SPACES("^[a-z ]{6,}$"),
+        DESCRIPTION("[a-zA-Z0-9.?! ]{6,}");
         
         private final String str;
         
@@ -710,7 +712,7 @@ class Helper {
         try {
             Pattern p = Pattern.compile(r.getRegex());
             status = p.matcher(str).matches();
-            System.out.println(status);
+            System.out.println(status + " " + str);
         }
         catch (Exception e) {
             status = false;

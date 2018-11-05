@@ -62,7 +62,7 @@
                 </thead>
                 <tbody>
                     <c:forEach items="${products}" var="product">
-                        <tr id="product${product.key}}">                
+                        <tr>                
                             <td><img src="../images/${product.key}.png" style="height:40px"></td>
                             <td><p> ${product.value.name} </p></td>
                             <td><p> ${product.value.cost} </p></td> 
