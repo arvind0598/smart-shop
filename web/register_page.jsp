@@ -16,12 +16,30 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <form id="register">    
-            <input id="name" type="text" name="name" placeholder="Name" required/>
-            <input id="email" type="email" name="email" placeholder="Email" required/>
-            <input id="pass" type="password" name="password" placeholder="Enter Password" required/>
-            <input id="conf_pass" type="password" name="conf_password" placeholder="Confirm Password" required/>
-            <button> Submit </button>
+        <form id="register">
+      		<div class="row">
+		<div class="col s12 m8 offset-m2 l6 offset-l3">
+             <div class="card large">
+	     <span> 
+		<div style="text-align:center;">   
+		<h5>REGISTER</h5></div>      
+            <input id="name" class="validate" type="text" name="name" required/>
+	     <label for="name">Name</label>
+            <input id="email" class="validate" type="email" name="email" required/>
+	    <label for="email">E-mail</label>
+            <input id="pass" class="validate" type="password" name="password" required/>
+	    <label for="pass">Password</label>
+            <input id="conf_pass" class="validate" type="password" name="conf_password" required/>
+	    <label for="conf_pass">Confirm Password</label>
+	    <div style="text-align:center;">
+             <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                <i class="material-icons right">send</i>
+            </button>
+	    </span>
+	    </div>
+	    </div>
+	  </div>
+	    </div>
         </form>
         <p id="message"></p>
 

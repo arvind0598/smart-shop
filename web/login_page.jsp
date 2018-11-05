@@ -33,17 +33,48 @@
         <form id="login" class="container row valign-wrapper">
             <div class="input-field col s6">
                 <input id="user" type="email" name="useremail" class="validate" required/>
-                <label for="useremail"> Email ID </label>
+                <label for="user"> Email ID </label>
             </div>
             <div class="input-field col s6">
                 <input id="pass" type="password" name="password" class="validate" required/>
-                <label for="password"> Password </label>
+                <label for="pass"> Password </label>
             </div>
             <button class="btn waves-effect waves-light" type="submit" name="action">Submit
                 <i class="material-icons right">send</i>
             </button>        
         </form>
         <p id="message"></p>
+	
+	  <div class="slider">
+	    <ul class="slides">
+	      <li>
+		<img src="https://static1.squarespace.com/static/537c12a7e4b0ca838c2ee48d/564c0158e4b06f49e6635c6a/5652add8e4b02e2458acf0d1/1460365453183/Gateway_1200+Blur.jpg?format=2500w"> <!-- random image -->
+		<div class="caption center-align">
+		  <h3>WELCOME TO S MART</h3>
+		  <h5 class="light grey-text text-lighten-3">Quality Products Just Few Clicks Away</h5>
+		</div>
+	      </li>
+	      <li>
+		<img src="https://s20998.pcdn.co/wp-content/uploads/2017/08/IMG_0003.jpg"> <!-- random image -->
+		<div class="caption left-align">
+		  <h3>Choose From A Variety Of Products</h3>
+		</div>
+	      </li>
+	      <li>
+		<img src="https://cdn.forbesmiddleeast.com/en/wp-content/uploads/sites/3/2017/04/shutterstock_521741356-1635x1091.jpg"> <!-- random image -->
+		<div class="caption right-align">
+		  <h3>At Best Prices</h3>
+		</div>
+	      </li>
+	      <li>
+		<img src="https://static1.squarespace.com/static/537c12a7e4b0ca838c2ee48d/564c0158e4b06f49e6635c6a/5652add8e4b02e2458acf0d1/1460365453183/Gateway_1200+Blur.jpg?format=2500w"> <!-- random image -->
+		<div class="caption center-align">
+		  <h3>Go Get Some!</h3>
+		</div>
+	      </li>
+	    </ul>
+	  </div>
+	      
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
@@ -71,6 +102,8 @@
                 });
                 return false;
             });
+	     $(document).ready(function(){
+    	     $('.slider').slider();});
 
         </script>
     </body>
