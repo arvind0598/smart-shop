@@ -19,7 +19,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-   <head>
+    <head>
         <title>Admin Portal | S Mart</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,9 +30,9 @@
         <%@ include file="navbar.jspf"%>
         <div class="container">
             <div class="collection">
-            <a href="modify.jsp" class="collection-item">Modify Products</a>
-            <a href="#" class="collection-item">View Active Orders</a>
-          </div>
+                <a href="modify.jsp" class="collection-item">Modify Products</a>
+                <a href="orders.jsp" class="collection-item">View Active Orders</a>
+            </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="../js/materialize.min.js"></script>

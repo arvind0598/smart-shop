@@ -438,6 +438,78 @@ public class Process {
         return arr;
     }
 
+    public JSONObject getProductDetailsForAdmin(int product_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select name, stock from items where id = ?");
+            stmt.setInt(1, product_id);
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                x.put("name", res.getString(1));
+                x.put("stock", res.getInt(2));
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return x;
+    }
+
+    public JSONArray getOrderItemsForAdmin(int order_id) {
+        JSONArray arr = new JSONArray();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select item_id, qty from order_items where order_id = ?");
+            stmt.setInt(1, order_id);
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                JSONObject x = new JSONObject();
+                int item_id = res.getInt(1);
+                JSONObject item = getProductDetailsForAdmin(item_id);
+                x.put("item", item);
+                x.put("qty", res.getInt(2));
+                arr.add(x);
+            }
+
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return arr;
+    }
+
+    public JSONObject getOrderHistory(int cust_id) {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select id, bill, status from orders where cust_id = ?");
+            stmt.setInt(1, cust_id);
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                JSONObject item = new JSONObject();
+                int order_id = res.getInt(1);
+//                JSONArray orderItems = getOrderItems(order_id);
+                item.put("id", res.getInt(2));
+                item.put("bill", res.getInt(3));
+                item.put("status", res.getInt(4));
+//                item.put("items", orderItems);
+                x.put(order_id, item);
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return x;
+    }
+
     void logAccessAction(Connection conn, String username, AccessLogs type) {
 
         try {
@@ -642,6 +714,50 @@ public class Process {
             stmt.registerOutParameter(1, Types.INTEGER);
             stmt.setInt(2, product_id);
             stmt.setInt(3, stock);
+            stmt.setInt(4, admin_id);
+            stmt.execute();
+            status = stmt.getInt(1) == 1;
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return status;
+    }
+
+    public JSONObject getActiveOrders() {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select id, cust_id, bill, status from orders where status <> 2");
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                JSONObject item = new JSONObject();
+                int order_id = res.getInt(1);
+                JSONArray orderItems = getOrderItemsForAdmin(order_id);
+                item.put("cust_id", res.getInt(2));
+                item.put("bill", res.getInt(3));
+                item.put("status", res.getInt(4));
+                item.put("items", orderItems);
+                x.put(order_id, item);
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return x;
+    }
+
+    Boolean updateDeliveryStatus(int order_id, int del_status, int admin_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call update_del_status(?,?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, order_id);
+            stmt.setInt(3, del_status);
             stmt.setInt(4, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;

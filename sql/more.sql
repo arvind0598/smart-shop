@@ -8,6 +8,7 @@ drop procedure if exists add_item$$
 drop procedure if exists rmv_item$$
 drop procedure if exists add_offer$$
 drop procedure if exists add_stock$$
+drop procedure if exists update_del_status$$
 
 create procedure update_cart_qty
 	(in a int, in b int, in c int)
@@ -108,6 +109,18 @@ begin
 	select name into name_x from items where id = item_x;
 	delete from items where id = item_x;
 	insert into admin_logs(admin_id, action, details) values(adm_x, 'RMV_ITEM', name_x);
+
+	set status_x = 1;
+end$$
+
+create procedure update_del_status
+	(out status_x int, in order_x int, in del_status int, in adm_x int)
+begin
+	
+	set status_x = 0;
+
+	update orders set status = del_status where id = order_x;
+	insert into admin_logs(admin_id, action, details) values(adm_x, 'MOD_DEL_STATUS', del_status);
 
 	set status_x = 1;
 end$$
