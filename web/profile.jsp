@@ -20,6 +20,9 @@
     }
     JSONObject details = new Project.Process().getCustomerDetails(x);
     session.setAttribute("details", details);
+    
+    JSONObject orders = new Project.Process().getOrderHistory(x);
+    session.setAttribute("orders", orders);
 %>
 
 <!DOCTYPE html>
@@ -94,6 +97,8 @@
                     </div>
                 </form>
             </div>
+            
+            <%=orders.toString()%>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

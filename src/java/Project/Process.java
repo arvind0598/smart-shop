@@ -495,9 +495,10 @@ public class Process {
                 JSONObject item = new JSONObject();
                 int order_id = res.getInt(1);
 //                JSONArray orderItems = getOrderItems(order_id);
-                item.put("id", res.getInt(2));
-                item.put("bill", res.getInt(3));
-                item.put("status", res.getInt(4));
+                item.put("bill", res.getInt(2));
+                item.put("details", getOrderItemsForAdmin(order_id));
+                item.put("status", res.getInt(3));
+                
 //                item.put("items", orderItems);
                 x.put(order_id, item);
             }
