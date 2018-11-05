@@ -47,84 +47,98 @@
             </c:choose>
         </div>
 
-        <form id="change_pass" onsubmit="return changePass()">
-	  <div class="row">
-       	   <h5> Change Password </h5>
-	   <div class="col s12">Current Password:
-	    <div class="input-field inline">
-            <input type="password" id="curr_pass" name="curr_pass" placeholder="Current Password" class="validate" required/>
-	    </div>
-           </div>
-          </div>
-	  <div class="row">
-	   <div class="col s20">New Password:  
-	    <div class="input-field inline">
-            <input type="password" id="new_pass" name="new_pass" placeholder="New Password" class="validate" required/>
-	    </div>
-           </div>
-          </div>
-	  <div class="row">
-	   <div class="col s12">Confirm Password:
-	    <div class="input-field inline">
-            <input type="password" id="conf_pass" placeholder="Confirm New Password" class="validate" required/>
-	    </div>
-           </div>
-          </div>
-            <button class="waves-effect waves-light btn-small">Change Password</button>
-        </form>
-	<div class="row"></row>
-        <form id="change_add" onsubmit=" return changeAddress()">
-	<div class="row">
-	 <div class="col m9">
-        <h5> Change Address </h5>
-            <textarea id="address" name="address" required></textarea>
-	</div></div>
-            <button class="waves-effect waves-light btn-small">Change Address</button>
-        </form>
+        <div class="row">
+            <div class="col l6">
+                <form id="change_pass" onsubmit="return changePass()" class="card medium hoverable">
+                    <div class="card-content">
+                        <span class="card-title"> Change Password </span>
+                        <div class="row">
+                            <div class="input-field col l8">
+                                <input type="password" id="curr_pass" name="curr_pass" class="validate" required/>
+                                <label for="curr_pass">Current Password</label>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <div class="input-field col l8">
+                                <input type="password" id="new_pass" name="new_pass" class="validate" required/>
+                                <label for="new_pass">New Password</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col l8">
+                                <input type="password" id="conf_pass" class="validate" required/>
+                                <label for="conf_pass">Confirm New Password</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <button class="waves-effect waves-light btn">Change Password</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col l6">
+                <form id="change_add" onsubmit=" return changeAddress()" class="card medium hoverable">
+                    <div class="card-content">
+                        <span class="card-title"> Change Address </span>
+                        <div class="row">
+                            <div class="input-field col l12">
+                                <textarea id="address" name="address" class="materialize-textarea" required></textarea>
+                                <label for="address"> New Address </label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-action">
+                        <button class="waves-effect waves-light btn">Change Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
 
         <script>
-            let passForm = $("#change_pass");
-            let addressForm = $("#change_add");
+                    let passForm = $("#change_pass");
+                    let addressForm = $("#change_add");
 
-            const changePass = () => {
-                if ($("#new_pass").val() !== $("#conf_pass").val()) {
-                    alert("Passwords do not match.");
-                    return false;
-                }
-                $.ajax({
-                    type: "POST",
-                    url: "serve_changepass",
-                    data: passForm.serializeArray(),
-                    success: data => {
-                        alert(data.message);
-                    },
-                    error: err => {
-                        alert("There has been an error.");
-                        console.log(err);
+                    const changePass = () => {
+                        if ($("#new_pass").val() !== $("#conf_pass").val()) {
+                            alert("Passwords do not match.");
+                            return false;
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: "serve_changepass",
+                            data: passForm.serializeArray(),
+                            success: data => {
+                                alert(data.message);
+                            },
+                            error: err => {
+                                alert("There has been an error.");
+                                console.log(err);
+                            }
+                        });
+                        return false;
                     }
-                });
-                return false;
-            }
 
-            const changeAddress = () => {
-                $.ajax({
-                    type: "POST",
-                    url: "serve_changeadd",
-                    data: addressForm.serializeArray(),
-                    success: data => {
-                        alert(data.message);
-                        window.location.reload(true);
-                    },
-                    error: err => {
-                        alert("There has been an error.");
-                        console.log(err);
+                    const changeAddress = () => {
+                        $.ajax({
+                            type: "POST",
+                            url: "serve_changeadd",
+                            data: addressForm.serializeArray(),
+                            success: data => {
+                                alert(data.message);
+                                window.location.reload(true);
+                            },
+                            error: err => {
+                                alert("There has been an error.");
+                                console.log(err);
+                            }
+                        });
+                        return false;
                     }
-                });
-                return false;
-            }
 
         </script>
 
