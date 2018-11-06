@@ -5,8 +5,14 @@
  */
 package Project;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -57,44 +63,43 @@ public class Checkout extends HttpServlet {
         response.setContentType("application/json");
         HttpSession sess = request.getSession();
         JSONObject obj = new JSONObject();
-        
+
         String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
         String temp_point_status = request.getParameter("points");
-        
+
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean point_status = Boolean.valueOf(temp_point_status);
-        
+
         int order_id = -1;
 
-        if(!cust_id_valid) {
+        if (!cust_id_valid) {
             obj.put("status", -1);
             obj.put("message", "Login to add to cart.");
-        }
-        else {
+        } else {
             int cust_id = Integer.parseInt(temp_cust_id);
             System.out.println(cust_id + " " + point_status);
-                    
+
             order_id = x.checkoutOrder(cust_id, point_status);
-            if(order_id < 1) {
+            if (order_id < 1) {
                 obj.put("status", 0);
                 obj.put("message", "There was an error.");
-            }
-            
-            else {
+            } else {
                 obj.put("status", 1);
-                obj.put("message", "Succesfully placed order. Pay to continue.");
+                obj.put("message", "Succesfully placed order.");
             }
-            
+
         }
         try (PrintWriter out = response.getWriter()) {
             out.println(obj);
             out.close();
         }
-        
+
         sess.setAttribute("order_id", order_id);
         sess.setAttribute("used_points", point_status);
         sess.removeAttribute("details");
         sess.removeAttribute("products");
+
+        sendEmail();
     }
 
     /**
@@ -106,5 +111,31 @@ public class Checkout extends HttpServlet {
     public String getServletInfo() {
         return "checks out a customer";
     }// </editor-fold>
+
+    public void sendEmail() throws MalformedURLException, IOException {
+        URL url = new URL("https://script.google.com/macros/s/AKfycbwZm6E2OzyHqnjwQAe10TgAobIyH1tmhk3nWpt_E3ahlMIajm8/exec");
+
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        int responseCode = conn.getResponseCode();
+        System.out.println("GET Response Code :: " + responseCode);
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder lol = new StringBuilder();
+            String inputLine;
+            
+            while ((inputLine = in.readLine()) != null) {
+                lol.append(inputLine);
+            }
+            
+            in.close();
+        } 
+        
+        else {
+            System.out.println("GET request not worked");
+        }
+    }
 
 }
