@@ -80,7 +80,6 @@
 
         <script>
             let form = $("#login");
-            let message = $("#message");
             
             $('.slider').slider();
             
@@ -92,8 +91,7 @@
                     url: "serve_login",
                     data: form.serializeArray(),
                     success: data => {
-                        
-                        message.text(data.message);
+                        console.log(data);
                         M.toast({
                             html: data.message,
                             displayLength: 1000,

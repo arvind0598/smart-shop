@@ -75,31 +75,34 @@ public class Checkout extends HttpServlet {
         if (!cust_id_valid) {
             obj.put("status", -1);
             obj.put("message", "Login to add to cart.");
+            return;
+        } 
+            
+        int cust_id = Integer.parseInt(temp_cust_id);
+        System.out.println(cust_id + " " + point_status);
+
+        order_id = x.checkoutOrder(cust_id, point_status);
+        if (order_id < 1) {
+            obj.put("status", 0);
+            obj.put("message", "There was an error.");
         } else {
-            int cust_id = Integer.parseInt(temp_cust_id);
-            System.out.println(cust_id + " " + point_status);
-
-            order_id = x.checkoutOrder(cust_id, point_status);
-            if (order_id < 1) {
-                obj.put("status", 0);
-                obj.put("message", "There was an error.");
-            } else {
-                obj.put("status", 1);
-                obj.put("message", "Succesfully placed order.");
-            }
-
+            obj.put("status", 1);
+            obj.put("message", "Succesfully placed order.");
         }
+
         try (PrintWriter out = response.getWriter()) {
             out.println(obj);
             out.close();
         }
+        
+        JSONObject cust = x.getCustomerDetails(cust_id);
+        
+        sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
 
         sess.setAttribute("order_id", order_id);
         sess.setAttribute("used_points", point_status);
         sess.removeAttribute("details");
-        sess.removeAttribute("products");
-
-        sendEmail();
+        sess.removeAttribute("products");        
     }
 
     /**
@@ -112,14 +115,17 @@ public class Checkout extends HttpServlet {
         return "checks out a customer";
     }// </editor-fold>
 
-    public void sendEmail() throws MalformedURLException, IOException {
-        URL url = new URL("https://script.google.com/macros/s/AKfycbwZm6E2OzyHqnjwQAe10TgAobIyH1tmhk3nWpt_E3ahlMIajm8/exec");
+    public void sendEmail(String email, int order, String name) throws MalformedURLException, IOException {
+        
+        String preURL = String.format("https://script.google.com/macros/s/AKfycbwZm6E2OzyHqnjwQAe10TgAobIyH1tmhk3nWpt_E3ahlMIajm8/exec?email=%s&order=%d&name=%s", email, order, name.split(" (?!.* )")[0]);
+        
+        URL url = new URL(preURL);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
 
         int responseCode = conn.getResponseCode();
-        System.out.println("GET Response Code :: " + responseCode);
+        System.out.println("GET " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
