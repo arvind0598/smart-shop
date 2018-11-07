@@ -42,7 +42,7 @@ public class Process {
 
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=? and level = 0");
+            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=sha(?) and level = 0");
             stmt.setString(1, useremail);
             stmt.setString(2, password);
 
@@ -75,7 +75,7 @@ public class Process {
             PreparedStatement stmt;
 
             // check if user id exists not done because duplicate entry violates constraint and hence returns false
-            stmt = conn.prepareStatement("insert into login(email, password, name) values(?, ?, ?)");
+            stmt = conn.prepareStatement("insert into login(email, password, name) values(?, sha(?), ?)");
             stmt.setString(1, email);
             stmt.setString(2, password);
             stmt.setString(3, name);
@@ -491,7 +491,7 @@ public class Process {
                 item.put("details", getOrderItemsForAdmin(order_id));
                 item.put("status", res.getInt(3));
                 item.put("feedback", res.getInt(4));
-                
+
 //                item.put("items", orderItems);
                 x.put(order_id, item);
             }
@@ -503,7 +503,7 @@ public class Process {
 
         return x;
     }
-    
+
     Boolean provideFeedback(int order_id, String feedback, int cust_id) {
         Boolean status = false;
         try {
@@ -795,9 +795,5 @@ class Helper {
         }
 
         return status;
-    }
-    
-    public static String hashPassword(String pass) {
-        return pass;
     }
 }

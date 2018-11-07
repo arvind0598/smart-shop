@@ -77,8 +77,7 @@ public class Register extends HttpServlet {
             return;
         } 
         
-        String hashedPassword = Helper.hashPassword(password);
-        Boolean status = x.registerUser(username, useremail, hashedPassword);
+        Boolean status = x.registerUser(username, useremail, password);
 
         try (PrintWriter out = response.getWriter()) {
             HttpSession sess = request.getSession();

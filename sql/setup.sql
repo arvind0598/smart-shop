@@ -10,7 +10,7 @@ use shop;
 CREATE TABLE `login` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`email` varchar(50) NOT NULL UNIQUE,
-	`password` varchar(30) NOT NULL,
+	`password` varchar(50) NOT NULL,
 	`level` int NOT NULL DEFAULT '0',
 	`name` varchar(30),
 	`address` varchar(100),
