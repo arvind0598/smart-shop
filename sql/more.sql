@@ -9,6 +9,7 @@ drop procedure if exists rmv_item$$
 drop procedure if exists add_offer$$
 drop procedure if exists add_stock$$
 drop procedure if exists update_del_status$$
+drop procedure if exists add_feedback$$
 
 create procedure update_cart_qty
 	(in a int, in b int, in c int)
@@ -121,6 +122,18 @@ begin
 
 	update orders set status = del_status where id = order_x;
 	insert into admin_logs(admin_id, action, details) values(adm_x, 'MOD_DEL_STATUS', del_status);
+
+	set status_x = 1;
+end$$
+
+create procedure add_feedback
+	(out status_x int, in order_x int, in feedback_x varchar(200), in cust_x int)
+begin
+	
+	set status_x = 0;
+
+	update orders set feedback = feedback_x where id = order_x;
+	insert into cust_logs(cust_id, action, details) values(cust_x, 'FEEDBACK', order_x);
 
 	set status_x = 1;
 end$$

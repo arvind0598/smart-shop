@@ -22,14 +22,6 @@ public class Process {
         REGISTER;
     }
 
-    enum CustLogs {
-        FEEDBACK;
-    }
-
-    enum AdminLogs {
-        CHANGE_DEL_STATUS;
-    }
-
     enum DeliveryStatus {
         DEL_RECEIVED,
         DEL_DISPATCHED,
@@ -487,7 +479,7 @@ public class Process {
         JSONObject x = new JSONObject();
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select id, bill, status from orders where cust_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("select id, bill, status, case when feedback is null then 0 else 1 end as feedback from orders where cust_id = ?");
             stmt.setInt(1, cust_id);
             ResultSet res = stmt.executeQuery();
 
@@ -498,6 +490,7 @@ public class Process {
                 item.put("bill", res.getInt(2));
                 item.put("details", getOrderItemsForAdmin(order_id));
                 item.put("status", res.getInt(3));
+                item.put("feedback", res.getInt(4));
                 
 //                item.put("items", orderItems);
                 x.put(order_id, item);
@@ -509,6 +502,24 @@ public class Process {
         }
 
         return x;
+    }
+    
+    Boolean provideFeedback(int order_id, String feedback, int cust_id) {
+        Boolean status = false;
+        try {
+            Connection conn = connectSQL();
+            CallableStatement stmt = conn.prepareCall("call add_feedback(?,?,?,?)");
+            stmt.registerOutParameter(1, Types.INTEGER);
+            stmt.setInt(2, order_id);
+            stmt.setString(3, feedback);
+            stmt.setInt(4, cust_id);
+            stmt.execute();
+            status = stmt.getInt(1) == 1;
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return status;
     }
 
     void logAccessAction(Connection conn, String username, AccessLogs type) {
@@ -523,34 +534,6 @@ public class Process {
             Helper.handleError(e);
         }
 
-    }
-
-    void logCustomerAction(Connection conn, int id, String details, CustLogs type) {
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("insert into cust_logs(cust_id, action, details) values(?, ?, ?)");
-            stmt.setInt(1, id);
-            stmt.setString(2, type.toString());
-            stmt.setString(3, details);
-            stmt.execute();
-
-        } catch (Exception e) {
-            Helper.handleError(e);
-        }
-    }
-
-    void logAdminAction(Connection conn, int id, String details, CustLogs type) {
-
-        try {
-            PreparedStatement stmt = conn.prepareStatement("insert into admin_logs(cust_id, action, details) values(?, ?, ?)");
-            stmt.setInt(1, id);
-            stmt.setString(2, type.toString());
-            stmt.setString(3, details);
-            stmt.execute();
-
-        } catch (Exception e) {
-            Helper.handleError(e);
-        }
     }
 
     //    admin
@@ -801,10 +784,6 @@ class Helper {
         }
     }
 
-    public static String hashPassword(String pass) {
-        return pass;
-    }
-
     public static Boolean regexChecker(Regex r, String str) {
         Boolean status = false;
         try {
@@ -816,5 +795,9 @@ class Helper {
         }
 
         return status;
+    }
+    
+    public static String hashPassword(String pass) {
+        return pass;
     }
 }
