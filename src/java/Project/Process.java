@@ -380,6 +380,7 @@ public class Process {
             if (res.next()) {
                 status = true;
             }
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -422,7 +423,7 @@ public class Process {
                 x.put("qty", res.getInt(2));
                 arr.add(x);
             }
-
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -467,7 +468,7 @@ public class Process {
                 x.put("qty", res.getInt(2));
                 arr.add(x);
             }
-
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -516,6 +517,7 @@ public class Process {
             stmt.setInt(4, cust_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -544,7 +546,7 @@ public class Process {
 
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=? and level=1");
+            PreparedStatement stmt = conn.prepareStatement("select id from login where email=? and password=sha(?) and level=1");
             stmt.setString(1, useremail);
             stmt.setString(2, password);
 
@@ -580,6 +582,7 @@ public class Process {
             stmt.setInt(3, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -597,6 +600,7 @@ public class Process {
             stmt.setInt(3, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -623,6 +627,7 @@ public class Process {
 
             stmt.execute();
             status = stmt.getInt(1);
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
             status = -1;
@@ -641,6 +646,7 @@ public class Process {
             stmt.setInt(3, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -684,6 +690,7 @@ public class Process {
             stmt.setInt(4, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -702,6 +709,7 @@ public class Process {
             stmt.setInt(4, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }
@@ -746,6 +754,7 @@ public class Process {
             stmt.setInt(4, admin_id);
             stmt.execute();
             status = stmt.getInt(1) == 1;
+            conn.close();
         } catch (Exception e) {
             Helper.handleError(e);
         }

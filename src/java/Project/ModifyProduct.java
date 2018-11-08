@@ -113,7 +113,7 @@ public class ModifyProduct extends HttpServlet {
                 product.put("offer", offer);
                 product.put("name", product_name);
                 product.put("desc", desc);
-                product.put("keywords", keywords);
+                product.put("keywords", keywords.toLowerCase());
                 product.put("stock", Integer.parseInt(temp_stock));
 
                 int status = -1;
