@@ -1,7 +1,7 @@
 -- insert queries go here, remember to do in order to avoid foreign key issues
 
-insert into login(email, password, name, address, points) values("arvind0598@gmail.com", "pass", 'Arvind S', 'Apt.-32 Sugar Lane', 23);
-insert into login(email, password, level) values("admin@admin.com", "admin1", 1);
+insert into login(email, password, name, address, points) values("arvind0598@gmail.com", "9D4E1E23BD5B727046A9E3B4B7DB57BD8D6EE684", 'Arvind S', 'Apt.-32 Sugar Lane', 23);
+insert into login(email, password, level) values("admin@admin.com", "6C7CA345F63F835CB353FF15BD6C5E052EC08E7A", 1);
 
 insert into categories(name) values('Footwear');
 insert into items(cat_id, name, details, cost, keywords, stock, offer) values(1, 'Nike superun', 'Black sneakers, Rain wear',1000,'shoes sports', 10, 100);
