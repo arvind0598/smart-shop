@@ -29,13 +29,13 @@
                         </div>
                         <div class="row">
                             <div class="input-field col l12 m12">
-                                <input id="email" class="validate" type="email" name="email" required/>
+                                <input id="email" class="validate" type="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required/>
                                 <label for="email"> E-mail </label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col l6 m6">
-                                <input id="pass" class="validate" type="password" name="password" required/>
+                                <input id="pass" class="validate" type="password" name="password" pattern=".{6,}" title="Six or more characters" required/>
                                 <label for="pass"> Password </label>
                             </div>
                             <div class="input-field col l6 m6">

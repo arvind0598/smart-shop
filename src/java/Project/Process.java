@@ -484,6 +484,7 @@ public class Process {
     }
 
     public JSONObject getOrderHistory(int cust_id) {
+        System.out.println(cust_id + " hehehehe");
         JSONObject x = new JSONObject();
         try {
             Connection conn = connectSQL();
@@ -496,7 +497,7 @@ public class Process {
                 int order_id = res.getInt(1);
 //                JSONArray orderItems = getOrderItems(order_id);
                 item.put("bill", res.getInt(2));
-                item.put("details", getOrderItemsForAdmin(order_id));
+//                item.put("details", getOrderItemsForAdmin(order_id));
                 item.put("status", res.getInt(3));
                 
 //                item.put("items", orderItems);

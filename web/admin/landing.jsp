@@ -34,7 +34,25 @@
                 <a href="orders.jsp" class="collection-item">View Active Orders</a>
             </div>
         </div>
+       <div class="slider">
+            <ul class="slides">
+                <li>
+                    <img src="https://s20998.pcdn.co/wp-content/uploads/2017/08/IMG_0003.jpg">
+                    <div class="caption left-align">
+                        <h3>Organize the products</h3>
+                    </div>
+                </li>
+                <li>
+                    <img src="https://cdn.forbesmiddleeast.com/en/wp-content/uploads/sites/3/2017/04/shutterstock_521741356-1635x1091.jpg">
+                    <div class="caption right-align">
+                        <h3>Keep Track Of Orders</h3>
+                    </div>
+                </li>
+            </ul>
+        </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="../js/materialize.min.js"></script>
+	<script>  $(document).ready(function(){
+    $('.slider').slider();  });</script>
     </body>
 </html>

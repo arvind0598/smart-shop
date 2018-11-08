@@ -61,15 +61,6 @@
                                 <th> Required Quantity </th>
                             </tr>
                         </thead>
-<!--                        <tbody>
-                            <c:forEach var="i" begin="0" end="${order.value.items.size() - 1}">
-                                <tr>
-                                    <td> ${order.value.items.get(i).get("name")} </td>
-                                    <td> ${order.value.items.get(i).get("stock")} </td>
-                                    <td> ${order.value.qty} </td>
-                                </tr>
-                            </c:forEach>                                
-                        </tbody>-->
                         <tbody>
                             
                                 <c:forEach var="item" items="${order.value.items}">
