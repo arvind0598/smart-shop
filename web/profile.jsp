@@ -20,7 +20,7 @@
     }
     JSONObject details = new Project.Process().getCustomerDetails(x);
     session.setAttribute("details", details);
-    
+
     JSONObject orders = new Project.Process().getOrderHistory(x);
     session.setAttribute("orders", orders);
 %>
@@ -97,40 +97,49 @@
                     </div>
                 </form>
             </div>
-            
-            <%=orders.toString()%>
-	 <div class="row">
-	  <div class="col m12">
-	 <div class="card medium hoverable">
-           <div class="card-content">
-	    <span class="card-title"> Order History </span>
-	    <c:forEach items="${orders}" var="ord">
-	     <div class="row">
-	     <div class="col m3">
-	      <h6>Order no.: ${ord.key}</h6>
-              <p>Bill: ${ord.value.bill}</p>
-	      <c:choose>
-	      	<c:when test="${ord.value.status eq 0}">
-	         <p>Status: Recieved</p>
-	        </c:when>
-	        <c:when test="${ord.value.status eq 1}">
-	         <p>Status: Dispatched</p>
-	        </c:when>
-	        <c:otherwise>
-	         <p>Status: Delivered</p>
-	        </c:otherwise>
-	      </c:choose>
-		</div>
-                <div class="input-field col m7">
-                 <textarea id="feed" name="feedback" class="materialize-textarea" required></textarea>
-                  <label for="feed"> Feedback </label>
+
+            <div class="container">
+
+            <h4> Order History </h4>
+            <div class="row">
+            <c:forEach items="${orders}" var="ord">
+                
+                    <div class="col l6">
+                        <div class="card small hoverable">
+                            <div class="card-content">		
+                                <h5>Order no.: ${ord.key}</h5>
+                                <p>Bill: ${ord.value.bill}</p>
+                                <c:choose>
+                                    <c:when test="${ord.value.status eq 0}">
+                                        <p>Status: Received</p>
+                                    </c:when>
+                                    <c:when test="${ord.value.status eq 1}">
+                                        <p>Status: Dispatched</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p>Status: Delivered</p>
+                                    </c:otherwise>
+                                </c:choose>
+                                <c:choose>
+                                    <c:when test="${ord.value.feedback eq 0}">
+                                        <div class="input-field col m7">
+                                            <textarea id="feed" name="feedback" class="materialize-textarea" required></textarea>
+                                            <label for="feed"> Feedback </label>
+                                        </div>
+                                        <div class="input-field col m2">
+                                            <button class="waves-effect waves-light btn">Submit Feedback</button>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h5>Feedback Submitted</h5>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </div>
+                
+            </c:forEach>
                 </div>
-		<div class="input-field col m2">
-                  <button class="waves-effect waves-light btn">Submit Feedback</button>
-		</div>
-		</div>
-		
-	    </c:forEach></div></div></div></div></div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

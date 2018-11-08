@@ -61,10 +61,10 @@
                        if(data.status > 0) {
                            window.location.href = "landing.jsp";
                        }
-                       message.text(data.message);
+                       M.toast({html: data.message,displayLength: 1000});
                    },
                    error : err => {
-                       message.text("There has been a server error. Please try again.");
+                       M.toast({html: "There has been a server error. Please try again."});
                        console.log(err);
                    }
                });
