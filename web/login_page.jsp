@@ -54,7 +54,7 @@
                     </div>
                 </li>
                 <li>
-                    <img src="https://s20998.pcdn.co/wp-content/uploads/2017/08/IMG_0003.jpg"> <!-- random image -->
+                    <img src="https://s20998.pcdn.co/wp-content/uploads/2017/08/IMG_0003.jpg">
                     <div class="caption left-align">
                         <h3>Choose From A Variety Of Products</h3>
                     </div>

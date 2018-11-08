@@ -63,7 +63,7 @@
                         </div>
                         <div class="row"> 
                             <div class="input-field col l8">
-                                <input type="password" id="new_pass" name="new_pass" class="validate" required/>
+                                <input type="password" id="new_pass" name="new_pass" class="validate" pattern =".{6,}" title="Six or more characters" required/>
                                 <label for="new_pass">New Password</label>
                             </div>
                         </div>
@@ -99,6 +99,38 @@
             </div>
             
             <%=orders.toString()%>
+	 <div class="row">
+	  <div class="col m12">
+	 <div class="card medium hoverable">
+           <div class="card-content">
+	    <span class="card-title"> Order History </span>
+	    <c:forEach items="${orders}" var="ord">
+	     <div class="row">
+	     <div class="col m3">
+	      <h6>Order no.: ${ord.key}</h6>
+              <p>Bill: ${ord.value.bill}</p>
+	      <c:choose>
+	      	<c:when test="${ord.value.status eq 0}">
+	         <p>Status: Recieved</p>
+	        </c:when>
+	        <c:when test="${ord.value.status eq 1}">
+	         <p>Status: Dispatched</p>
+	        </c:when>
+	        <c:otherwise>
+	         <p>Status: Delivered</p>
+	        </c:otherwise>
+	      </c:choose>
+		</div>
+                <div class="input-field col m7">
+                 <textarea id="feed" name="feedback" class="materialize-textarea" required></textarea>
+                  <label for="feed"> Feedback </label>
+                </div>
+		<div class="input-field col m2">
+                  <button class="waves-effect waves-light btn">Submit Feedback</button>
+		</div>
+		</div>
+		
+	    </c:forEach></div></div></div></div></div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
