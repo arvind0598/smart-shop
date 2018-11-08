@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
  */
 @WebServlet(name = "Logout", urlPatterns = {"/signout"})
 public class Logout extends HttpServlet {
-    
+
     Process x = new Process();
 
     /**
@@ -36,29 +36,32 @@ public class Logout extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession sess = request.getSession();
-        Integer admin = (Integer)sess.getAttribute("admlogin");
-        Integer status = (Integer)sess.getAttribute("login");
-        
+        Integer admin = (Integer) sess.getAttribute("admlogin");
+        Integer status = (Integer) sess.getAttribute("login");
+
         Boolean allow = false;
         String target = "index.jsp";
 
-        if(admin != null) {
+        if (admin != null) {
             allow = x.logoutUser(admin);
-            if(allow) {
+            if (allow) {
                 target = "admin/index.jsp";
-            } 
-        }
-        
-        else if(status != null) {
+            }
+        } else if (status != null) {
             allow = x.logoutUser(status);
-            if(allow) {
+            if (allow) {
                 target = "index.jsp";
-            } 
+            }
+        }
+
+        if (!allow) {
+            response.sendRedirect(target);
+            return;
         }
         
-        if(!allow) return;
         request.getSession().invalidate();
-        response.sendRedirect(target);        
+        response.sendRedirect(target);
+        return;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

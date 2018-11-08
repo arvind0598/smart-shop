@@ -90,7 +90,7 @@
                             <label for="desc"> Product Description </label>
                         </div>
                     </div> 
-                    <!--cost keywords stock offer-->
+                    
                     <div class="row">
                         <div class="input-field col l12 m12 s12">
                             <input id="keywords" type="text" class="validate" name="keywords" required>

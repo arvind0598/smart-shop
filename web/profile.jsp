@@ -36,18 +36,22 @@
     </head>
     <body>
         <%@ include file="navbar.jspf"%>
-        <div>
-            <h4> ${details.name} </h4>
-            <p> Email: ${details.email} </p>
-            <p> Points: ${details.points} </p>
-            <c:choose>
-                <c:when test="${details.address ne null}">
-                    <p> Address: ${details.address} </p>
-                </c:when>
-                <c:otherwise>
-                    <p><b> Please Enter Address to place order. </b></p>
-                </c:otherwise>
-            </c:choose>
+        <div class="container">
+            <ul class="collection with-header">
+                <li class="collection-header"> <h4> ${details.name} </h4> </li>
+                <li class="collection-item"> <p> <b>Email:</b> ${details.email} </p> </li>
+                <li class="collection-item"> <p> <b>Points:</b> ${details.points} </p> </li>
+                <li class="collection-item"> 
+                    <c:choose>
+                        <c:when test="${details.address ne null}">
+                            <p> <b>Address:</b> ${details.address} </p>
+                        </c:when>
+                        <c:otherwise>
+                            <p><b> Please Enter Address to place order. </b></p>
+                        </c:otherwise>
+                    </c:choose>
+                </li>
+            </ul>
         </div>
 
         <div class="row">
@@ -97,94 +101,120 @@
                     </div>
                 </form>
             </div>
+        </div>
 
-            <div class="container">
+        <div class="divider"></div>
 
-            <h4> Order History </h4>
+        <div class="">
+            <h3 class="center-align"> Order History </h3>
             <div class="row">
-            <c:forEach items="${orders}" var="ord">
-                
-                    <div class="col l6">
+                <c:forEach items="${orders}" var="ord">
+
+                    <c:set value="${ord.value.status}" var="status"/>
+                    <c:set value="${status eq 0 ? 'Received' : status eq 1 ? 'Dispatched' : 'Delivered'}" var="orderstring"/>
+
+                    <div class="col l${ord.value.feedback eq 0 ? 6 : 4}">
                         <div class="card small hoverable">
                             <div class="card-content">		
-                                <h5>Order no.: ${ord.key}</h5>
-                                <p>Bill: ${ord.value.bill}</p>
-                                <c:choose>
-                                    <c:when test="${ord.value.status eq 0}">
-                                        <p>Status: Received</p>
-                                    </c:when>
-                                    <c:when test="${ord.value.status eq 1}">
-                                        <p>Status: Dispatched</p>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <p>Status: Delivered</p>
-                                    </c:otherwise>
-                                </c:choose>
+                                <h4> Order #${ord.key} </h4>
+                                <p> <b>Final Amount :</b> Rs.${ord.value.bill} </p>
+                                <p> <b>Status :</b> ${orderstring} </p>
+
                                 <c:choose>
                                     <c:when test="${ord.value.feedback eq 0}">
-                                        <div class="input-field col m7">
-                                            <textarea id="feed" name="feedback" class="materialize-textarea" required></textarea>
-                                            <label for="feed"> Feedback </label>
-                                        </div>
-                                        <div class="input-field col m2">
-                                            <button class="waves-effect waves-light btn">Submit Feedback</button>
-                                        </div>
+                                        <form class="row" onsubmit="return submitFeedback(this, ${ord.key})">
+                                            <div class="input-field col m9">
+                                                <textarea id="feed" name="feedback" class="materialize-textarea" required></textarea>
+                                                <label for="feed"> Feedback </label>
+                                            </div>
+                                            <div class="input-field col m3">
+                                                <button class="waves-effect waves-light btn">Submit Feedback</button>
+                                            </div>
+                                        </form>
                                     </c:when>
                                     <c:otherwise>
-                                        <h5>Feedback Submitted</h5>
+                                        <h6><i>Feedback Submitted</i></h6>
                                     </c:otherwise>
                                 </c:choose>
+
                             </div>
                         </div>
                     </div>
-                
-            </c:forEach>
-                </div>
+                </c:forEach>
+            </div>
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/materialize.min.js"></script>
 
         <script>
-                    let passForm = $("#change_pass");
-                    let addressForm = $("#change_add");
+                                                let passForm = $("#change_pass");
+                                                let addressForm = $("#change_add");
 
-                    const changePass = () => {
-                        if ($("#new_pass").val() !== $("#conf_pass").val()) {
-                            alert("Passwords do not match.");
-                            return false;
-                        }
-                        $.ajax({
-                            type: "POST",
-                            url: "serve_changepass",
-                            data: passForm.serializeArray(),
-                            success: data => {
-                                alert(data.message);
-                            },
-                            error: err => {
-                                alert("There has been an error.");
-                                console.log(err);
-                            }
-                        });
-                        return false;
-                    }
+                                                const changePass = () => {
+                                                    if ($("#new_pass").val() !== $("#conf_pass").val()) {
+                                                        alert("Passwords do not match.");
+                                                        return false;
+                                                    }
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: "serve_changepass",
+                                                        data: passForm.serializeArray(),
+                                                        success: data => {
+                                                            alert(data.message);
+                                                        },
+                                                        error: err => {
+                                                            alert("There has been an error.");
+                                                            console.log(err);
+                                                        }
+                                                    });
+                                                    return false;
+                                                }
 
-                    const changeAddress = () => {
-                        $.ajax({
-                            type: "POST",
-                            url: "serve_changeadd",
-                            data: addressForm.serializeArray(),
-                            success: data => {
-                                alert(data.message);
-                                window.location.reload(true);
-                            },
-                            error: err => {
-                                alert("There has been an error.");
-                                console.log(err);
-                            }
-                        });
-                        return false;
-                    }
+                                                const changeAddress = () => {
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: "serve_changeadd",
+                                                        data: addressForm.serializeArray(),
+                                                        success: data => {
+                                                            alert(data.message);
+                                                            window.location.reload(true);
+                                                        },
+                                                        error: err => {
+                                                            alert("There has been an error.");
+                                                            console.log(err);
+                                                        }
+                                                    });
+                                                    return false;
+                                                }
+
+                                                const submitFeedback = (x, id) => {
+                                                    $.ajax({
+                                                        type: "POST",
+                                                        url: "serve_feedback",
+                                                        data: {
+                                                            feedback: x[0].value,
+                                                            order: id
+                                                        },
+                                                        success: data => {
+                                                            alert(data.message);
+                                                            window.location.reload(true);
+                                                            M.toast({
+                                                                html: data.message,
+                                                                completeCallback: function () {
+                                                                    if (data.status < 1)
+                                                                        window.location.reload(true);
+                                                                }
+                                                            })
+                                                        },
+                                                        error: err => {
+                                                            M.toast({html: "There has been an error."});
+                                                            console.log(err);
+                                                        }
+                                                    });
+                                                    console.log(x[0].value);
+                                                    return false;
+                                                }
 
         </script>
 

@@ -48,15 +48,15 @@
         <main>
             <div class="container">
                 <ul class="collection with-header">
-                    <li class="collection-header"> <h4>Categories<h4> </li>
-                        <c:forEach items="${categories}" var="cat">
-                            <li class="collection-item">
-                                <a href="category.jsp?id=${cat.key}" class="title"> ${cat.value} </a>
-                                <a href="javascript:removeCategory(${cat.key})" class="secondary-content">
-                                    <i class="material-icons red-text"> delete </i>
-                                </a>
-                            </li>
-                        </c:forEach>
+                    <li class="collection-header"> <h4>Categories</h4> </li>
+                    <c:forEach items="${categories}" var="cat">
+                        <li class="collection-item">
+                            <a href="category.jsp?id=${cat.key}" class="title"> ${cat.value} </a>
+                            <a href="javascript:removeCategory(${cat.key})" class="secondary-content">
+                                <i class="material-icons red-text"> delete </i>
+                            </a>
+                        </li>
+                    </c:forEach>
                 </ul>
             </div>
         </main>
@@ -127,4 +127,4 @@
                 }
     </script>
 
-    </html>
+</html>

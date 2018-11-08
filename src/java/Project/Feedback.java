@@ -65,7 +65,7 @@ public class Feedback extends HttpServlet {
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean order_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_order_id);
 
-        int order_id = -1;
+        int order_id = Integer.parseInt(temp_order_id);
 
         if (!cust_id_valid) {
             obj.put("status", -1);

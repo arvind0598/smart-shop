@@ -59,11 +59,10 @@
         <script>
             let form = $("#register");
             let message = $("#message");
-            console.log("egegeg");
+
             form.on("submit", event => {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log("aaa");
                 if ($("#pass").val() !== $("#conf_pass").val()) {
                     alert("Passwords do not match.");
                     return false;

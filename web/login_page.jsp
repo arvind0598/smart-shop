@@ -80,9 +80,9 @@
 
         <script>
             let form = $("#login");
-            
+
             $('.slider').slider();
-            
+
             form.on("submit", event => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -95,8 +95,9 @@
                         M.toast({
                             html: data.message,
                             displayLength: 1000,
-                            completeCallback: function() {
-                                if (data.status > 0) window.location.href = "<%=session.getAttribute("currentpage") == null? "index.jsp" : session.getAttribute("currentpage")%>";
+                            completeCallback: function () {
+                                if (data.status > 0)
+                                    window.location.href = "<%=session.getAttribute("currentpage") == null ? "index.jsp" : session.getAttribute("currentpage")%>";
                             }
                         });
                     },

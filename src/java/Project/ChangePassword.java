@@ -77,9 +77,8 @@ public class ChangePassword extends HttpServlet {
             }             
             return;
         } 
-        
-        String hashedCurrPassword = Helper.hashPassword(currPassword);
-        int currUser = x.checkUser(useremail, hashedCurrPassword, true);
+       
+        int currUser = x.checkUser(useremail, currPassword, true);
         
         if(currUser <= 0) {
             try (PrintWriter out = response.getWriter()) {
@@ -91,8 +90,7 @@ public class ChangePassword extends HttpServlet {
             return;
         }
         
-        String hashedNewPassword = Helper.hashPassword(newPassword);
-        x.changePassword(currUser, hashedNewPassword);
+        x.changePassword(currUser, newPassword);
         try (PrintWriter out = response.getWriter()) {
             obj.put("status", 1);
             obj.put("message", "Succesfully changed Password");

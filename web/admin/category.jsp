@@ -104,70 +104,70 @@
         <script type="text/javascript" src="../js/materialize.min.js"></script>
 
         <script>
-            const stocks = $(".addstock");
-            const offers = $(".addoffer");
+                                    const stocks = $(".addstock");
+                                    const offers = $(".addoffer");
 
-            const submitUpdate = (type, value, id) => {
-                $.ajax({
-                    type: "POST",
-                    url: "../serve_modstockoffer",
-                    data: {
-                        type: type,
-                        value: value,
-                        id: id
-                    },
-                    success: data => {
-                        console.log(data);
-                        M.toast({
-                            html: data.message
-                        });
-                    },
-                    error: err => {
-                        M.toast({
-                            html: "There has been a server error. Please try again."
-                        });
-                        console.log(err);
-                    }
-                });
-            }
-            
-            const deleteProduct = id => {
-                $.ajax({
-                    type: "POST",
-                    url: "../serve_rmvitem",
-                    data: {
-                        id: id
-                    },
-                    success: data => {
-                        console.log(data);
-                        M.toast({
-                            html: data.message,
-                            completeCallback: window.location.reload(true)
-                        });
-                    },
-                    error: err => {
-                        M.toast({
-                            html: "There has been a server error. Please try again."
-                        });
-                        console.log(err);
-                    }
-                });
-            }
+                                    const submitUpdate = (type, value, id) => {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "../serve_modstockoffer",
+                                            data: {
+                                                type: type,
+                                                value: value,
+                                                id: id
+                                            },
+                                            success: data => {
+                                                console.log(data);
+                                                M.toast({
+                                                    html: data.message
+                                                });
+                                            },
+                                            error: err => {
+                                                M.toast({
+                                                    html: "There has been a server error. Please try again."
+                                                });
+                                                console.log(err);
+                                            }
+                                        });
+                                    }
 
-            stocks.on("submit", event => {
-                event.preventDefault();
-                event.stopPropagation();
-                console.log(event.currentTarget[0].dataset.id);
-                submitUpdate(0, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
-                return false;
-            });
+                                    const deleteProduct = id => {
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "../serve_rmvitem",
+                                            data: {
+                                                id: id
+                                            },
+                                            success: data => {
+                                                console.log(data);
+                                                M.toast({
+                                                    html: data.message,
+                                                    completeCallback: window.location.reload(true)
+                                                });
+                                            },
+                                            error: err => {
+                                                M.toast({
+                                                    html: "There has been a server error. Please try again."
+                                                });
+                                                console.log(err);
+                                            }
+                                        });
+                                    }
 
-            offers.on("submit", event => {
-                event.preventDefault();
-                event.stopPropagation();
-                submitUpdate(1, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
-                return false;
-            });
+                                    stocks.on("submit", event => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        console.log(event.currentTarget[0].dataset.id);
+                                        submitUpdate(0, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
+                                        return false;
+                                    });
+
+                                    offers.on("submit", event => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        submitUpdate(1, event.currentTarget[0].value, event.currentTarget[0].dataset.id);
+                                        return false;
+                                    });
         </script>
 
     </body> 

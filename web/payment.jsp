@@ -46,7 +46,6 @@
                 height: 100%;
                 width: 100%;
             }
-
         </style>
     </head>
     <body>
@@ -74,8 +73,8 @@
                     <td>
                         <c:if test="${product.value.offer ne 0}">
                             <s> ${product.value.cost} </s>
-                            </c:if>
-                            <c:out value="${effectiveCost}"/>
+                        </c:if>
+                        <c:out value="${effectiveCost}"/>
                     </td>
                     <td> 
                         ${product.value.qty} 
@@ -90,9 +89,9 @@
             </c:forEach>    
         </table>
         <p><b> Total Effective Cost:</b> <span id="total">${sessionScope.totalCost}</span></p>
-            <fmt:parseNumber var="maxPoints" value="${sessionScope.totalCost/2}" type="number" pattern="#" />
-            <fmt:parseNumber var="currPoints" value="${sessionScope.details.points}" type="number" pattern="#"/>
-            <c:set value="${(maxPoints < currPoints) ? maxPoints : currPoints}" var="allowedPoints" scope="session"/> 
+        <fmt:parseNumber var="maxPoints" value="${sessionScope.totalCost/2}" type="number" pattern="#" />
+        <fmt:parseNumber var="currPoints" value="${sessionScope.details.points}" type="number" pattern="#"/>
+        <c:set value="${(maxPoints < currPoints) ? maxPoints : currPoints}" var="allowedPoints" scope="session"/> 
         <p>Do you want to apply ${sessionScope.allowedPoints} points? </p>
         <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()"> 
         <p><b> Total Savings:</b> <span id="savings">${sessionScope.totalSavings}</span></p>
@@ -138,9 +137,14 @@
                         console.log(data);
                         window.setTimeout(() => {
                             $("#loader").removeClass("loading");
-                            alert("Order succesfully placed. Please check your inbox for details.");
+                            M.toast({
+                                html: "Order succesfully placed. Please check your inbox for details.",
+                                displayLength: 2500,
+                                completeCallback: function() {
+                                    window.location.href = "index.jsp";
+                                }
+                            });
                         }, 3000);
-                        window.location.href = "index.jsp";
                     },
                     error: err => {
                         console.log(err);

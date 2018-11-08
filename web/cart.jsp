@@ -133,7 +133,7 @@
                         window.location.href = "payment.jsp";
                     </c:when>
                     <c:otherwise>
-                        alert("Please enter address");
+                        M.toast({html:"Please enter address"});
                         window.location.href = "profile.jsp";
                     </c:otherwise>
                 </c:choose>

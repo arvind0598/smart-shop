@@ -32,6 +32,7 @@
             <div class="collection">
                 <a href="modify.jsp" class="collection-item">Modify Products</a>
                 <a href="orders.jsp" class="collection-item">View Active Orders</a>
+                <a href="feedback.jsp" class="collection-item">View Feedback</a>
             </div>
         </div>
        <div class="slider">

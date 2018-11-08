@@ -62,25 +62,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
-                                <c:forEach var="item" items="${order.value.items}">
-                                    <tr>
+                            <c:forEach var="item" items="${order.value.items}">
+                                <tr>
                                     <td> ${item.item.name} </td>
                                     <td> ${item.item.stock} </td>
                                     <td> ${item.qty} </td>   
-                                    </tr>
-                                </c:forEach>
-                            
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </section>
             </c:forEach>
         </div>
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="../js/materialize.min.js"></script>
         <script>
             $('select').formSelect();
-            
+
             const changeStatus = (id, status) => {
                 console.log(id, status);
                 $.ajax({

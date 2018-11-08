@@ -120,7 +120,7 @@ public class Process {
         Boolean status = false;
         try {
             Connection conn = connectSQL();
-            PreparedStatement stmt = conn.prepareStatement("update login set password = ? where id = ?");
+            PreparedStatement stmt = conn.prepareStatement("update login set password = sha(?) where id = ?");
             stmt.setString(1, password);
             stmt.setInt(2, customer_id);
             stmt.execute();
@@ -507,6 +507,7 @@ public class Process {
     }
 
     Boolean provideFeedback(int order_id, String feedback, int cust_id) {
+        System.out.println(order_id + " " + feedback + " " + cust_id);
         Boolean status = false;
         try {
             Connection conn = connectSQL();
@@ -761,6 +762,31 @@ public class Process {
 
         return status;
     }
+    
+    public JSONObject getAllFeedback() {
+        JSONObject x = new JSONObject();
+        try {
+            Connection conn = connectSQL();
+            PreparedStatement stmt = conn.prepareStatement("select orders.id, name, bill, status, feedback from orders join login on(cust_id = login.id) where feedback is not null");
+            ResultSet res = stmt.executeQuery();
+
+            while (res.next()) {
+                JSONObject item = new JSONObject();
+                int order_id = res.getInt(1);
+                item.put("name", res.getString(2));
+                item.put("bill", res.getInt(3));
+                item.put("status", res.getInt(4));
+                item.put("feedback", res.getString(5));
+                x.put(order_id, item);
+            }
+
+            conn.close();
+        } catch (Exception e) {
+            Helper.handleError(e);
+        }
+
+        return x;
+    }
 }
 
 class Helper {
@@ -799,7 +825,7 @@ class Helper {
         try {
             Pattern p = Pattern.compile(r.getRegex());
             status = p.matcher(str).matches();
-            System.out.println(status + " " + str);
+//            System.out.println(status + " " + str);
         } catch (Exception e) {
             status = false;
         }
