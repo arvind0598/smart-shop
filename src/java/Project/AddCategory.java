@@ -78,7 +78,7 @@ public class AddCategory extends HttpServlet {
         return "adds a category";
     }// </editor-fold>
 
-    private JSONObject processRequest(String category, String temp_admin_id) {
+    public JSONObject processRequest(String category, String temp_admin_id) {
 
         Boolean admin_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_admin_id);
         Boolean category_correct = Helper.regexChecker(Helper.Regex.MIN_FOUR_ALPHA_ONLY, category);

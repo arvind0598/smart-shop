@@ -87,7 +87,7 @@ public class Checkout extends HttpServlet {
         return "checks out a customer";
     }// </editor-fold>
 
-    private JSONObject processRequest(String temp_cust_id, String temp_point_status) throws IOException {
+    public JSONObject processRequest(String temp_cust_id, String temp_point_status) throws IOException {
         JSONObject obj = new JSONObject();
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean point_status = Boolean.valueOf(temp_point_status);
@@ -107,10 +107,9 @@ public class Checkout extends HttpServlet {
         if (order_id >= 1) {
             obj.put("order", order_id);
             obj.put("used_points", point_status);
+            JSONObject cust = x.getCustomerDetails(cust_id);
+            Helper.sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
         }
-
-        JSONObject cust = x.getCustomerDetails(cust_id);
-        Helper.sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
 
         return obj;
     }

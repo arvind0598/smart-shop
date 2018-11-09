@@ -82,7 +82,7 @@ public class UpdateCart extends HttpServlet {
         return "updates an item to a given qty in the cart";
     }// </editor-fold>
 
-    private JSONObject processRequest(String temp_cust_id, String temp_item_id, String temp_qty) {
+    public JSONObject processRequest(String temp_cust_id, String temp_item_id, String temp_qty) {
 
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean item_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_item_id);

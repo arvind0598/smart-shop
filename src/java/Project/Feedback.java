@@ -79,7 +79,7 @@ public class Feedback extends HttpServlet {
         return "gets feedback from a customer";
     }// </editor-fold>
 
-    private JSONObject processRequest(String temp_cust_id, String temp_order_id, String feedback) {
+    public JSONObject processRequest(String temp_cust_id, String temp_order_id, String feedback) {
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
         Boolean order_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_order_id);
 

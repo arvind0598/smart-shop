@@ -21,7 +21,7 @@ CREATE TABLE `login` (
 
 CREATE TABLE `categories` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`name` varchar(30) NOT NULL,
+	`name` varchar(30) NOT NULL UNIQUE,
 	PRIMARY KEY (`id`)
 );
 

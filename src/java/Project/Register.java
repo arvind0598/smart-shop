@@ -77,7 +77,7 @@ public class Register extends HttpServlet {
         return "servlet registers a user";
     }// </editor-fold>
 
-    private JSONObject processRequest(String useremail, String username, String password) {
+    public JSONObject processRequest(String useremail, String username, String password) {
 
         Boolean useremail_correct = Helper.regexChecker(Helper.Regex.EMAIL, useremail);
         Boolean password_correct = Helper.regexChecker(Helper.Regex.SIX_TO_TWELVE, password);
