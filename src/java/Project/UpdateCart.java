@@ -56,43 +56,16 @@ public class UpdateCart extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
-        
-        String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
+
+        String temp_cust_id = sess.getAttribute("login") == null ? "-1" : sess.getAttribute("login").toString();
         String temp_item_id = request.getParameter("id");
         String temp_qty = request.getParameter("qty");
-        
-        if(temp_qty == null) temp_qty = "1";
-        
-        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
-        Boolean item_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_item_id);
-        Boolean qty_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_qty);
+        if (temp_qty == null) {
+            temp_qty = "1";
+        }
 
-        if(!cust_id_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Login to add to cart.");
-        }
-        else if(!item_id_valid || !qty_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Invalid Request");
-        }
-        else {
-            int cust_id = Integer.parseInt(temp_cust_id);
-            int item_id = Integer.parseInt(temp_item_id);
-            int qty = Integer.parseInt(temp_qty);
-                    
-            Boolean status = x.updateCart(cust_id, item_id, qty);
-            if(!status) {
-                obj.put("status", 0);
-                obj.put("message", "Unable to update cart.");
-            }
-            
-            else {
-                obj.put("status", 1);
-                obj.put("message", "Succesfully updated.");
-            }
-            
-        }
+        JSONObject obj = processRequest(temp_cust_id, temp_item_id, temp_qty);
+        
         try (PrintWriter out = response.getWriter()) {
             out.println(obj);
             out.close();
@@ -108,4 +81,35 @@ public class UpdateCart extends HttpServlet {
     public String getServletInfo() {
         return "updates an item to a given qty in the cart";
     }// </editor-fold>
+
+    private JSONObject processRequest(String temp_cust_id, String temp_item_id, String temp_qty) {
+
+        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
+        Boolean item_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_item_id);
+        Boolean qty_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_qty);
+
+        JSONObject obj = new JSONObject();
+
+        if (!cust_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Login to add to cart.");
+            return obj;
+        }
+
+        if (!item_id_valid || !qty_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Invalid Request");
+            return obj;
+        }
+
+        int cust_id = Integer.parseInt(temp_cust_id);
+        int item_id = Integer.parseInt(temp_item_id);
+        int qty = Integer.parseInt(temp_qty);
+
+        Boolean status = x.updateCart(cust_id, item_id, qty);
+
+        obj.put("status", status ? 1 : 0);
+        obj.put("message", status ? "Successfully updated" : "Unable to update cart.");
+        return obj;
+    }
 }

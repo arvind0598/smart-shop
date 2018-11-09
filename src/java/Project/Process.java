@@ -799,7 +799,8 @@ class Helper {
         MIN_SIX_ALPHA_SPACES("^[a-zA-Z ]{6,}$"),
         MIN_SIX_ALPHANUM_SPACES("^[a-zA-Z0-9 ]{6,}$"),
         MIN_SIX_LOWERCASE_SPACES("^[a-z ]{6,}$"),
-        DESCRIPTION("[a-zA-Z0-9.?! ]{6,}");
+        DESCRIPTION("[a-zA-Z0-9.?! ]{6,}"),
+        SIX_TO_TWELVE(".{6,12}");
 
         private final String str;
 

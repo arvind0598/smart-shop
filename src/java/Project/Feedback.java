@@ -56,43 +56,17 @@ public class Feedback extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
 
         String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
         String temp_order_id = request.getParameter("order");
         String feedback = request.getParameter("feedback");
 
-        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
-        Boolean order_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_order_id);
-
-        int order_id = Integer.parseInt(temp_order_id);
-
-        if (!cust_id_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Login to provide feedback.");
-            return;
-        }
-        
-        if(!order_id_valid || feedback.length() > 200) {
-            obj.put("status", -1);
-            obj.put("message", "Invalid request.");
-        }
-            
-        int cust_id = Integer.parseInt(temp_cust_id);
-
-        Boolean status = x.provideFeedback(order_id, feedback, cust_id);
-        if (!status) {
-            obj.put("status", 0);
-            obj.put("message", "There was an error.");
-        } else {
-            obj.put("status", 1);
-            obj.put("message", "Your feedback was submitted.");
-        }
+        JSONObject obj = processRequest(temp_cust_id, temp_order_id, feedback);
 
         try (PrintWriter out = response.getWriter()) {
             out.println(obj);
             out.close();
-        }    
+        }
     }
 
     /**
@@ -104,4 +78,32 @@ public class Feedback extends HttpServlet {
     public String getServletInfo() {
         return "gets feedback from a customer";
     }// </editor-fold>
+
+    private JSONObject processRequest(String temp_cust_id, String temp_order_id, String feedback) {
+        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
+        Boolean order_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_order_id);
+
+        JSONObject obj = new JSONObject();
+
+        if (!cust_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Login to provide feedback.");
+            return obj;
+        }
+
+        if (!order_id_valid || feedback.length() > 200) {
+            obj.put("status", -1);
+            obj.put("message", "Invalid request.");
+            return obj;
+        }
+
+        int order_id = Integer.parseInt(temp_order_id);
+        int cust_id = Integer.parseInt(temp_cust_id);
+
+        Boolean status = x.provideFeedback(order_id, feedback, cust_id);
+
+        obj.put("status", status ? 1 : 0);
+        obj.put("message", status ? "Your feedback was submitted." : "There was an error.");
+        return obj;
+    }
 }

@@ -56,45 +56,16 @@ public class AddCategory extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
 
-        String category = request.getParameter("category");
+        String category = request.getParameter("category").trim();
         String temp_admin_id = sess.getAttribute("admlogin") == null ? "" : sess.getAttribute("admlogin").toString();
-        
-        Boolean admin_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_admin_id);
-        Boolean category_correct = Helper.regexChecker(Helper.Regex.MIN_FOUR_ALPHA_ONLY, category);
-        
-        if(!admin_id_valid) { 
-            try (PrintWriter out = response.getWriter()) {   
-                obj.put("status", -1);
-                obj.put("message", "Login to add to cart.");
-                out.println(obj);
-                out.close();                
-            }             
-            return;
-        }
-        
-        else if(!category_correct) {
-            try (PrintWriter out = response.getWriter()) {
-                
-                obj.put("status", -1);
-                obj.put("message", "Input provided was not valid.");
-                out.println(obj);
-                out.close();                
-            }             
-            return;
-        }
-        
-        int admin_id = Integer.parseInt(temp_admin_id);
-       
-        Boolean status = x.addCategory(category, admin_id);
+
+        JSONObject obj = processRequest(category, temp_admin_id);
 
         try (PrintWriter out = response.getWriter()) {
-            obj.put("status", status);
-            obj.put("message", status ? "Successfully added" : "Internal error.");
             out.println(obj);
-            out.close();            
-        }                
+            out.close();
+        }
     }
 
     /**
@@ -106,5 +77,32 @@ public class AddCategory extends HttpServlet {
     public String getServletInfo() {
         return "adds a category";
     }// </editor-fold>
+
+    private JSONObject processRequest(String category, String temp_admin_id) {
+
+        Boolean admin_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_admin_id);
+        Boolean category_correct = Helper.regexChecker(Helper.Regex.MIN_FOUR_ALPHA_ONLY, category);
+
+        JSONObject obj = new JSONObject();
+
+        if (!admin_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Login to add to cart.");
+            return obj;
+        }
+
+        if (!category_correct) {
+            obj.put("status", -1);
+            obj.put("message", "Input provided was not valid.");
+            return obj;
+        }
+
+        int admin_id = Integer.parseInt(temp_admin_id);
+        Boolean status = x.addCategory(category, admin_id);
+
+        obj.put("status", status ? 1 : 0);
+        obj.put("message", status ? "Successfully added" : "Internal error.");
+        return obj;
+    }
 
 }

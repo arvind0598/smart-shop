@@ -62,47 +62,25 @@ public class Checkout extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         HttpSession sess = request.getSession();
-        JSONObject obj = new JSONObject();
 
-        String temp_cust_id = sess.getAttribute("login") == null ? "" : sess.getAttribute("login").toString();
+        String temp_cust_id = sess.getAttribute("login") == null ? "-1" : sess.getAttribute("login").toString();
         String temp_point_status = request.getParameter("points");
 
-        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
-        Boolean point_status = Boolean.valueOf(temp_point_status);
-
-        int order_id = -1;
-
-        if (!cust_id_valid) {
-            obj.put("status", -1);
-            obj.put("message", "Login to add to cart.");
-            return;
-        } 
-            
-        int cust_id = Integer.parseInt(temp_cust_id);
-        System.out.println(cust_id + " " + point_status);
-
-        order_id = x.checkoutOrder(cust_id, point_status);
-        if (order_id < 1) {
-            obj.put("status", 0);
-            obj.put("message", "There was an error.");
-        } else {
-            obj.put("status", 1);
-            obj.put("message", "Succesfully placed order.");
-        }
+        JSONObject obj = processRequest(temp_cust_id, temp_point_status);
 
         try (PrintWriter out = response.getWriter()) {
             out.println(obj);
             out.close();
         }
-        
-        JSONObject cust = x.getCustomerDetails(cust_id);
-        
-        sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
 
-        sess.setAttribute("order_id", order_id);
-        sess.setAttribute("used_points", point_status);
-        sess.removeAttribute("details");
-        sess.removeAttribute("products");        
+        Boolean success = Integer.parseInt(obj.get("status").toString()) == 1;
+        if (success) {
+            sess.setAttribute("order_id", obj.get("order"));
+            sess.setAttribute("used_points", obj.get("used_points"));
+            sess.removeAttribute("details");
+            sess.removeAttribute("products");
+        }
+
     }
 
     /**
@@ -115,10 +93,10 @@ public class Checkout extends HttpServlet {
         return "checks out a customer";
     }// </editor-fold>
 
-    public void sendEmail(String email, int order, String name) throws MalformedURLException, IOException {
-        
+    private void sendEmail(String email, int order, String name) throws MalformedURLException, IOException {
+
         String preURL = String.format("https://script.google.com/macros/s/AKfycbwZm6E2OzyHqnjwQAe10TgAobIyH1tmhk3nWpt_E3ahlMIajm8/exec?email=%s&order=%d&name=%s", email, order, name.split(" (?!.* )")[0]);
-        
+
         URL url = new URL(preURL);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -131,17 +109,42 @@ public class Checkout extends HttpServlet {
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuilder lol = new StringBuilder();
             String inputLine;
-            
+
             while ((inputLine = in.readLine()) != null) {
                 lol.append(inputLine);
             }
-            
+
             in.close();
-        } 
-        
-        else {
+        } else {
             System.out.println("GET request not worked");
         }
     }
 
+    private JSONObject processRequest(String temp_cust_id, String temp_point_status) throws IOException {
+        JSONObject obj = new JSONObject();
+        Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
+        Boolean point_status = Boolean.valueOf(temp_point_status);
+
+        if (!cust_id_valid) {
+            obj.put("status", -1);
+            obj.put("message", "Login to add to cart.");
+            return obj;
+        }
+
+        int cust_id = Integer.parseInt(temp_cust_id);
+        int order_id = x.checkoutOrder(cust_id, point_status);
+
+        obj.put("status", order_id >= 1 ? 1 : 0);
+        obj.put("message", order_id >= 1 ? "Succesfully placed order." : "There was an error.");
+
+        if (order_id >= 1) {
+            obj.put("order", order_id);
+            obj.put("used_points", point_status);
+        }
+
+        JSONObject cust = x.getCustomerDetails(cust_id);
+        sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
+
+        return obj;
+    }
 }

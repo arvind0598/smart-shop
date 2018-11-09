@@ -94,9 +94,9 @@
         <c:set value="${(maxPoints < currPoints) ? maxPoints : currPoints}" var="allowedPoints" scope="session"/> 
         <p>Available Points: ${sessionScope.allowedPoints}</p>
         <label>
-	 <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()">
-	 <span>Use Points</span>
-	</label>
+            <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()">
+            <span>Use Points</span>
+        </label>
         <p><b> Total Savings:</b> <span id="savings">${sessionScope.totalSavings}</span></p>
 
         <button onclick="loader('PayTM')" class="waves-effect waves-light btn"> Pay via PayTM </button>
@@ -143,7 +143,7 @@
                             M.toast({
                                 html: "Order succesfully placed. Please check your inbox for details.",
                                 displayLength: 2500,
-                                completeCallback: function() {
+                                completeCallback: function () {
                                     window.location.href = "index.jsp";
                                 }
                             });

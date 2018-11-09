@@ -64,7 +64,7 @@
                 event.preventDefault();
                 event.stopPropagation();
                 if ($("#pass").val() !== $("#conf_pass").val()) {
-                    alert("Passwords do not match.");
+                    M.toast({html:"Passwords do not match."});
                     return false;
                 }
                 $.ajax({
