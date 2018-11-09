@@ -35,11 +35,11 @@
                         </div>
                         <div class="row">
                             <div class="input-field col l6 m6">
-                                <input id="pass" class="validate" type="password" name="password" pattern=".{6,}" title="Six or more characters" required/>
+                                <input id="pass" class="validate" type="password" name="password" pattern =".{6,12}" title="6-12 characters" required/>
                                 <label for="pass"> Password </label>
                             </div>
                             <div class="input-field col l6 m6">
-                                <input id="conf_pass" class="validate" type="password" name="conf_password" required/>
+                                <input id="conf_pass" class="validate" type="password" name="conf_password" pattern =".{6,12}" title="6-12 characters" required/>
                                 <label for="conf_pass"> Confirm Password </label>
                             </div>
                         </div>
