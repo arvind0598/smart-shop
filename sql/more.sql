@@ -79,7 +79,7 @@ begin
 end$$
 
 create procedure add_item
-	(out status_x int, in cat_x int, in name_x varchar(30), in details_x varchar(30), in cost_x int, in keywords_x varchar(200), in stock_x int, in offer_x int, in adm_x int)
+	(out status_x int, in cat_x int, in name_x varchar(30), in details_x varchar(200), in cost_x int, in keywords_x varchar(200), in stock_x int, in offer_x int, in adm_x int)
 begin
 	
 	declare offer_status_x int default 0;

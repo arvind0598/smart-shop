@@ -9,6 +9,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
 
 <%
+    response.setHeader("Pragma", "No-cache");
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setDateHeader("Expires", -1);    
+    
     Integer cat_id = null;
     try {
         cat_id = new Integer(request.getParameter("id"));

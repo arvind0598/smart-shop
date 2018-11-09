@@ -160,12 +160,14 @@
 //                            window.location.href = "index.jsp";
                         M.toast({
                             html: data.message,
+                            displayLength: 6000,
                             completeCallback: window.location.href = "category.jsp?id=${cat_id}"
                         });
                     },
                     error: err => {
                         M.toast({
-                            html: "There has been a server error. Please try again."
+                            html: "There has been a server error. Please try again.",
+                            displayLength: 5000
                         });
                         console.log(err);
                     }

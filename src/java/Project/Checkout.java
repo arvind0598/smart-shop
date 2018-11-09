@@ -5,14 +5,8 @@
  */
 package Project;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -93,33 +87,6 @@ public class Checkout extends HttpServlet {
         return "checks out a customer";
     }// </editor-fold>
 
-    private void sendEmail(String email, int order, String name) throws MalformedURLException, IOException {
-
-        String preURL = String.format("https://script.google.com/macros/s/AKfycbwZm6E2OzyHqnjwQAe10TgAobIyH1tmhk3nWpt_E3ahlMIajm8/exec?email=%s&order=%d&name=%s", email, order, name.split(" (?!.* )")[0]);
-
-        URL url = new URL(preURL);
-
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-
-        int responseCode = conn.getResponseCode();
-        System.out.println("GET " + responseCode);
-
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder lol = new StringBuilder();
-            String inputLine;
-
-            while ((inputLine = in.readLine()) != null) {
-                lol.append(inputLine);
-            }
-
-            in.close();
-        } else {
-            System.out.println("GET request not worked");
-        }
-    }
-
     private JSONObject processRequest(String temp_cust_id, String temp_point_status) throws IOException {
         JSONObject obj = new JSONObject();
         Boolean cust_id_valid = Helper.regexChecker(Helper.Regex.NUMBERS_ONLY, temp_cust_id);
@@ -143,7 +110,7 @@ public class Checkout extends HttpServlet {
         }
 
         JSONObject cust = x.getCustomerDetails(cust_id);
-        sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
+        Helper.sendEmail(cust.get("email").toString(), order_id, cust.get("name").toString());
 
         return obj;
     }
