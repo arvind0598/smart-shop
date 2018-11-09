@@ -61,19 +61,19 @@
                         <span class="card-title"> Change Password </span>
                         <div class="row">
                             <div class="input-field col l8">
-                                <input type="password" id="curr_pass" name="curr_pass" class="validate" required/>
+                                <input type="password" id="curr_pass" name="curr_pass" class="validate" pattern =".{6,12}" title="6-12 characters" required/>
                                 <label for="curr_pass">Current Password</label>
                             </div>
                         </div>
                         <div class="row"> 
                             <div class="input-field col l8">
-                                <input type="password" id="new_pass" name="new_pass" class="validate" pattern =".{6,}" title="Six or more characters" required/>
+                                <input type="password" id="new_pass" name="new_pass" class="validate" pattern =".{6,12}" title="6-12 characters" required/>
                                 <label for="new_pass">New Password</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col l8">
-                                <input type="password" id="conf_pass" class="validate" required/>
+                                <input type="password" id="conf_pass" class="validate" pattern =".{6,12}" title="6-12 characters" required/>
                                 <label for="conf_pass">Confirm New Password</label>
                             </div>
                         </div>
@@ -113,7 +113,7 @@
                     <c:set value="${ord.value.status}" var="status"/>
                     <c:set value="${status eq 0 ? 'Received' : status eq 1 ? 'Dispatched' : 'Delivered'}" var="orderstring"/>
 
-                    <div class="col l${ord.value.feedback eq 0 ? 6 : 4}">
+                    <div class="col l6">
                         <div class="card small hoverable">
                             <div class="card-content">		
                                 <h4> Order #${ord.key} </h4>

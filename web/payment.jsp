@@ -92,13 +92,16 @@
         <fmt:parseNumber var="maxPoints" value="${sessionScope.totalCost/2}" type="number" pattern="#" />
         <fmt:parseNumber var="currPoints" value="${sessionScope.details.points}" type="number" pattern="#"/>
         <c:set value="${(maxPoints < currPoints) ? maxPoints : currPoints}" var="allowedPoints" scope="session"/> 
-        <p>Do you want to apply ${sessionScope.allowedPoints} points? </p>
-        <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()"> 
+        <p>Available Points: ${sessionScope.allowedPoints}</p>
+        <label>
+	 <input type="checkbox" id="use_points" name="points_taken" value="1" onclick="usePoints()">
+	 <span>Use Points</span>
+	</label>
         <p><b> Total Savings:</b> <span id="savings">${sessionScope.totalSavings}</span></p>
 
-        <button onclick="loader('PayTM')"> Pay via PayTM </button>
-        <button onclick="loader('Tez')"> Pay via Tez </button>
-        <button onclick="loader('Online Banking')"> Pay via Online Banking </button>
+        <button onclick="loader('PayTM')" class="waves-effect waves-light btn"> Pay via PayTM </button>
+        <button onclick="loader('Tez')" class="waves-effect waves-light btn"> Pay via Tez </button>
+        <button onclick="loader('Online Banking')" class="waves-effect waves-light btn"> Pay via Online Banking </button>
     </body>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

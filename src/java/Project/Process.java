@@ -794,7 +794,7 @@ class Helper {
     enum Regex {
         NUMBERS_ONLY("^[0-9]+$"),
         MIN_FOUR_ALPHA_ONLY("^[a-zA-Z]{4,}$"),
-        EMAIL("^[^@]+@[^@]+\\.[^@]+$"),
+        EMAIL("[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"),
         MIN_SIX_ALPHANUM("^[a-zA-Z0-9]{6,}$"),
         MIN_SIX_ALPHA_SPACES("^[a-zA-Z ]{6,}$"),
         MIN_SIX_ALPHANUM_SPACES("^[a-zA-Z0-9 ]{6,}$"),
